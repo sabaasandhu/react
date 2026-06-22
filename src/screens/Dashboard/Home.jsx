@@ -41,7 +41,7 @@ const Home = () => {
               ) : <div className="bg-red-300 w-64 mx-auto p-3 rounded-lg text-sm text-center text-red-700 border-1 border-red-600">
                               No Products Found
                              {isAdmin && (
-                                <Link className='text-red-900 font-bold underline' to="http://localhost:8000/admin/" > Add New Product </Link>
+                                <Link className='text-red-900 font-bold underline' to="https://django-production-126c.up.railway.app/admin/" > Add New Product </Link>
                               )}
               </div>
             }
