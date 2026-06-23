@@ -165,9 +165,9 @@ const ProductCard = ({ product, index }) => {
 
         <div className="w-full h-50 flex items-center justify-center">
           <img
-           src={
+  src={
   product.images && product.images.length > 0
-    ? `${apis[2]}${product.images[0].image}`
+    ? product.images[0].image  // ✅ Direct API se aaya hua path use karein
     : '/placeholder.jpg'
 }
             alt={name}
