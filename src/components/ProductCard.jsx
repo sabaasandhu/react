@@ -77,12 +77,14 @@ const ProductCard = ({ product, index }) => {
           </div>
         )}
 
-      <div className="w-full h-50 flex items-center justify-center">
+<div className="w-full h-50 flex items-center justify-center">
   <img
     src={
-      isHover
-        ? product.images?.[1]?.image || product.images?.[0]?.image || '/placeholder.jpg'
-        : product.images?.[0]?.image || '/placeholder.jpg'
+      isHover && product.images && product.images.length > 1
+        ? product.images[1].image  // ✅ Hover pe doosri image (index 1)
+        : product.images && product.images.length > 0
+        ? product.images[0].image  // ✅ Normal state pe pehli image (index 0)
+        : '/placeholder.jpg'
     }
     alt={name}
     className={`w-full h-80 mt-5 object-contain transition-transform duration-300 ${
