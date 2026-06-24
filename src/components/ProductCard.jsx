@@ -163,23 +163,22 @@ const ProductCard = ({ product, index }) => {
           </div>
         )}
 
-        <div className="w-full h-50 flex items-center justify-center">
-          <img
-            src={
-               isHover
-        ? `${apis[2]}${product.images?.[0]?.image || product.images?.[0]?.image}`
-        : `${apis[2]}${product.images?.[1]?.image || product.images?.[0]?.image}` `${apis[2]}${product.images?.[1]?.image}`
-
-                // ? `${apis[2]}${product.images[0].image}`
-                // : `${apis[2]}${product.images[1].image}`
-            }
-            alt={name}
-            className={`w-full h-80 mt-5 object-contain transition-transform duration-300 ${
-              isHover ? "scale-105" : "scale-100"
-            }`}
-            style={{ maxHeight: "full", maxWidth: "full" }}
-          />
-        </div>
+      <div className="w-full h-50 flex items-center justify-center">
+  <img
+    src={
+      isHover && product.images && product.images.length > 1
+        ? `${apis[2]}${product.images[0].image}`  // ✅ Hover pe pehli image
+        : product.images && product.images.length > 0
+        ? `${apis[2]}${product.images[1]?.image || product.images[0].image}`  // ✅ Normal state mein doosri image
+        : '/placeholder.jpg'
+    }
+    alt={name}
+    className={`w-full h-80 mt-5 object-contain transition-transform duration-300 ${
+      isHover ? "scale-105" : "scale-100"
+    }`}
+    style={{ maxHeight: "full", maxWidth: "full" }}
+  />
+</div>
       </div>
 
       <div className="p-4 flex flex-col ">
