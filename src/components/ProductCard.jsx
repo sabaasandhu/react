@@ -82,8 +82,8 @@ const ProductCard = ({ product, index }) => {
     src={
       product.images && product.images.length > 0
         ? isHover && product.images.length > 1
-          ? `${apis[2]}${product.images[1].image}`  // ✅ Hover pe doosri image
-          : `${apis[2]}${product.images[0].image}`  // ✅ Normal state pe pehli image
+          ? product.images[1].image  // ✅ Hover pe doosri image
+          : product.images[0].image  // ✅ Normal state pe pehli image
         : '/placeholder.jpg'
     }
     alt={name}
