@@ -80,10 +80,10 @@ const ProductCard = ({ product, index }) => {
 <div className="w-full h-50 flex items-center justify-center">
   <img
     src={
-      isHover && product.images && product.images.length > 1
-        ? product.images[1].image  // ✅ Hover pe doosri image (index 1)
-        : product.images && product.images.length > 0
-        ? product.images[0].image  // ✅ Normal state pe pehli image (index 0)
+      product.images && product.images.length > 0
+        ? isHover && product.images.length > 1
+          ? `${apis[2]}${product.images[1].image}`  // ✅ Hover pe doosri image
+          : `${apis[2]}${product.images[0].image}`  // ✅ Normal state pe pehli image
         : '/placeholder.jpg'
     }
     alt={name}
