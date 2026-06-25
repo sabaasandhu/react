@@ -1,24 +1,22 @@
 import React, { useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
-import video from "images/video.mp4"
+import video from "../image/video.mp4"
 
 const Carasol = ({ category }) => {
   let slides = [];
 
   if (category === "khadar") {
-    slides = [
-      "video.mp4",
-     
+   slides = [
+       { type: 'video', src: video }
     ];
   } else if (category === "valvet") {
-    slides = [
-      "video.mp4",
-     
+   slides = [
+       { type: 'video', src: video }
     ];
   } else {
     slides = [
-      "video.mp4",
+       { type: 'video', src: video }
     ];
   }
 
@@ -37,13 +35,23 @@ const Carasol = ({ category }) => {
   return (
     <div className="embla overflow-hidden" ref={emblaRef}>
       <div className="embla__container flex">
-        {slides.map((img, i) => (
+        {slides.map((slide, i) => (
           <div className="embla__slide min-w-full" key={i}>
-            <img
-              src={img}
-              className="w-full h-[250px] md:h-[450px] object-cover rounded-xl"
-              alt=""
-            />
+            {slide.type === 'video' ? (
+              <video
+                src={slide.src}
+                className="w-full h-[250px] md:h-[450px] object-cover rounded-xl"
+                alt=""
+                autoPlay
+                loop
+              />
+            ) : (
+              <img
+                src={slide.src}
+                className="w-full h-[250px] md:h-[450px] object-cover rounded-xl"
+                alt=""
+              />
+            )}
           </div>
         ))}
       </div>
