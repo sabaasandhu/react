@@ -1,20 +1,21 @@
 import React, { useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
+import video from "images/video.mp4"
 
 const Carasol = ({ category }) => {
   let slides = [];
 
   if (category === "khadar") {
     slides = [
-      "https://hub.wtm.com/wp-content/uploads/2018/08/Blogging.jpg",
+      "video.mp4",
       "https://image/cc1.webp",
       "https://cdn.shopify.com/s/files/1/0248/7892/t/52/assets/hamilton-watches-banner_1440x.jpg",
       "https://i.pinimg.com/originals/4f/7f/83/4f7f83f20552d1055c2f7f4a3d84b6bf.jpg",
     ];
   } else if (category === "valvet") {
     slides = [
-      "https://hub.wtm.com/wp-content/uploads/2018/08/Blogging.jpg",
+      "video.mp4",
       "https://image/cc1.webp",
       "https://cdn.shopify.com/s/files/1/0248/7892/t/52/assets/hamilton-watches-banner_1440x.jpg",
       "https://i.pinimg.com/originals/4f/7f/83/4f7f83f20552d1055c2f7f4a3d84b6bf.jpg",
