@@ -9,22 +9,16 @@ const Carasol = ({ category }) => {
   if (category === "khadar") {
     slides = [
       "video.mp4",
-      "https://image/cc1.webp",
-      "https://cdn.shopify.com/s/files/1/0248/7892/t/52/assets/hamilton-watches-banner_1440x.jpg",
-      "https://i.pinimg.com/originals/4f/7f/83/4f7f83f20552d1055c2f7f4a3d84b6bf.jpg",
+     
     ];
   } else if (category === "valvet") {
     slides = [
       "video.mp4",
-      "https://image/cc1.webp",
-      "https://cdn.shopify.com/s/files/1/0248/7892/t/52/assets/hamilton-watches-banner_1440x.jpg",
-      "https://i.pinimg.com/originals/4f/7f/83/4f7f83f20552d1055c2f7f4a3d84b6bf.jpg",
+     
     ];
   } else {
     slides = [
-      "https://styka.pk/cdn/shop/files/Styka-01.webp?v=1764914779&width=1370",
-      "https://styka.pk/cdn/shop/files/Styka-03.webp?v=1764914779&width=1370",
-      "https://www.mariab.pk/cdn/shop/files/Luxury_Pret_Web_Banner_02.jpg?v=1763444782",
+      "video.mp4",
     ];
   }
 
