@@ -40,7 +40,7 @@ const Carasol = ({ category }) => {
             {slide.type === 'video' ? (
               <video
                 src={slide.src}
-                className="w-full h-[250px] md:h-[450px] object-cover rounded-xl"
+                className="w-full h-[50px] md:h-[50px] object-cover rounded-xl"
                 alt=""
                 autoPlay
                 loop
@@ -48,7 +48,7 @@ const Carasol = ({ category }) => {
             ) : (
               <img
                 src={slide.src}
-                className="w-full h-[250px] md:h-[450px] object-cover rounded-xl"
+                className="w-full h-[50px] md:h-[50px] object-cover rounded-xl"
                 alt=""
               />
             )}
