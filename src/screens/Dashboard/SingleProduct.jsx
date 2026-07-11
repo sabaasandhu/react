@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Rating from "../../components/Rating";
 import salePriceFunc from "../../helpers/Func.jsx";
 import { singleProduct } from "../../redux/actions/productActions";
 import { addToCart, fetchCart } from "../../redux/actions/cartActions";
 import MetaData from "../../components/MetaData";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import {
   FaWhatsapp,
   FaFacebook,
@@ -16,7 +15,6 @@ import {
   FaCheck,
   FaRuler,
   FaTshirt,
-  FaPalette,
   FaChartBar,
   FaTimes,
   FaFemale,
@@ -29,17 +27,33 @@ import {
   FaUndo,
 } from "react-icons/fa";
 
-// NOTE: ProductCard builds image URLs the same way — hardcoded here instead
-// of via config/apis.js. Ideally both files should import one shared
+// ProductCard builds image URLs the same way — hardcoded here instead of
+// via config/apis.js. Ideally both files should import one shared
 // IMAGE_BASE_URL from apis.js so there's a single place to change it, but
 // matching ProductCard exactly for now so images resolve consistently.
 const IMAGE_BASE_URL = "https://django-production-126c.up.railway.app";
+
+// Stitched garment sizes with measurements (inches)
+const SIZE_CHART = {
+  Small: { bust: "34", waist: "28", hips: "36", length: "42" },
+  Medium: { bust: "36", waist: "30", hips: "38", length: "43" },
+  Large: { bust: "38", waist: "32", hips: "40", length: "44" },
+  XL: { bust: "40", waist: "34", hips: "42", length: "45" },
+};
+
+// Unstitched fabric length options
+const UNSTITCH_SIZE_CHART = {
+  "1 Meter": { length: "36", width: "44", fabric: "1 Meter" },
+  "1.5 Meter": { length: "54", width: "44", fabric: "1.5 Meter" },
+  "2 Meter": { length: "72", width: "44", fabric: "2 Meter" },
+  "2.5 Meter": { length: "90", width: "44", fabric: "2.5 Meter" },
+  "3 Meter": { length: "108", width: "44", fabric: "3 Meter" },
+};
 
 const SingleProduct = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { product, loading } = useSelector((state) => state.prodSlice);
-  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
   const [quantity, setQuantity] = useState(1);
@@ -48,48 +62,24 @@ const SingleProduct = () => {
   const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showSizeChart, setShowSizeChart] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [isWishlist, setIsWishlist] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
+
   const imgRef = useRef(null);
   const shareMenuRef = useRef(null);
   const sizeChartRef = useRef(null);
-
-  // Stitched garment sizes with measurements (inches)
-  const sizeChartData = {
-    Small: { bust: "34", waist: "28", hips: "36", length: "42" },
-    Medium: { bust: "36", waist: "30", hips: "38", length: "43" },
-    Large: { bust: "38", waist: "32", hips: "40", length: "44" },
-    XL: { bust: "40", waist: "34", hips: "42", length: "45" },
-  };
-
-  // Unstitched fabric length options
-  const unstitchSizeChart = {
-    "1 Meter": { length: "36", width: "44", fabric: "1 Meter" },
-    "1.5 Meter": { length: "54", width: "44", fabric: "1.5 Meter" },
-    "2 Meter": { length: "72", width: "44", fabric: "2 Meter" },
-    "2.5 Meter": { length: "90", width: "44", fabric: "2.5 Meter" },
-    "3 Meter": { length: "108", width: "44", fabric: "3 Meter" },
-  };
-
-  const availableColors = [
-    { name: "Black", hex: "#000000" },
-    { name: "Blue", hex: "#0000FF" },
-    { name: "Yellow", hex: "#FFD700" },
-  ];
 
   useEffect(() => {
     dispatch(singleProduct(id));
   }, [dispatch, id]);
 
-  // Reset selections whenever the product changes so old size/color
-  // choices don't carry over between products
+  // Reset selections whenever the product changes so a size chosen on one
+  // product doesn't carry over to the next
   useEffect(() => {
     setSelectedSize("");
-    setSelectedColor("");
     setSelectedImage(0);
     setQuantity(1);
   }, [id]);
@@ -118,10 +108,10 @@ const SingleProduct = () => {
   };
 
   const shareOnWhatsApp = () => {
-    const productName = product ? product.name : "";
-    const productBrand = product ? product.brand : "";
-    const productPrice = product ? product.price : 0;
-    const productDiscount = product && product.discount ? product.discount : 0;
+    const productName = product?.name || "";
+    const productBrand = product?.brand || "";
+    const productPrice = product?.price || 0;
+    const productDiscount = product?.discount || 0;
     const text = `Check out ${productBrand} ${productName} - Rs.${salePriceFunc(
       productPrice,
       productDiscount
@@ -166,31 +156,26 @@ const SingleProduct = () => {
       return;
     }
 
-    if (!selectedColor) {
-      toast.error("Please select a color!");
-      return;
-    }
-
-    if (stock === 0) {
+    if (!product?.stock) {
       toast.error("Out of stock!");
       return;
     }
 
-    if (!product || !product.id) {
+    if (!product?.id) {
       toast.error("Product not found!");
       return;
     }
 
     try {
       setAddingToCart(true);
-      // NOTE: addToCart (as used in ProductCard too) only takes (id, qty) —
-      // it has no size/color parameter today, so the selection made on this
-      // page isn't actually stored against the cart line item yet. If you
-      // want size/color tracked in the cart, addToCart's action + reducer +
-      // backend serializer all need to accept and persist them first.
+      // addToCart (as used in ProductCard too) only takes (id, qty) — it has
+      // no size parameter today, so the size chosen on this page isn't
+      // persisted against the cart line item yet. If size needs to be
+      // tracked per cart item, addToCart's action + reducer + backend
+      // serializer all need to accept and store it first.
       await dispatch(addToCart(product.id, quantity));
       await dispatch(fetchCart());
-      toast.success(`Added to cart: ${selectedSize}, ${selectedColor}`);
+      toast.success(`Added to cart: ${selectedSize}`);
       setShowSizeChart(false);
     } catch (error) {
       toast.error("Failed to add to cart!");
@@ -207,8 +192,8 @@ const SingleProduct = () => {
   if (loading || !product) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="w-20 h-20 border-4 border-orange-200 border-t-orange-600 rounded-full mb-6 animate-spin"></div>
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-600 rounded-full mb-6 animate-spin" />
           <p className="text-gray-600 font-medium">Loading product...</p>
         </div>
       </div>
@@ -229,18 +214,16 @@ const SingleProduct = () => {
     gender = "unisex",
   } = product;
 
-  function inc() {
-    setQuantity((q) => Math.min(stock, q + 1));
-  }
-
-  function dec() {
-    setQuantity((q) => Math.max(1, q - 1));
-  }
+  const inc = () => setQuantity((q) => Math.min(stock, q + 1));
+  const dec = () => setQuantity((q) => Math.max(1, q - 1));
 
   const isUnstitch = category ? category.toLowerCase().includes("unstitch") : false;
-  const sizes = isUnstitch ? Object.keys(unstitchSizeChart) : Object.keys(sizeChartData);
+  const sizeChart = isUnstitch ? UNSTITCH_SIZE_CHART : SIZE_CHART;
+  const sizes = Object.keys(sizeChart);
   const GenderIcon = gender === "women" ? FaFemale : gender === "men" ? FaMale : null;
-  const readyToAdd = stock > 0 && selectedSize && selectedColor;
+  const readyToAdd = stock > 0 && Boolean(selectedSize);
+
+  const getImageUrl = (img) => (img ? `${IMAGE_BASE_URL}${img.image}` : "/placeholder.jpg");
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -276,18 +259,18 @@ const SingleProduct = () => {
             >
               <img
                 ref={imgRef}
-                src={images && images[selectedImage] ? `${IMAGE_BASE_URL}${images[selectedImage].image}` : "/placeholder.jpg"}
+                src={getImageUrl(images?.[selectedImage])}
                 alt={name}
                 className="w-full h-full object-contain p-8"
               />
 
-              {showMagnifier && images && images[selectedImage] && (
+              {showMagnifier && images?.[selectedImage] && (
                 <div
                   className="absolute pointer-events-none w-56 h-56 border-4 border-white rounded-full overflow-hidden shadow-2xl"
                   style={{
                     left: `${cursorPosition.x - 112}px`,
                     top: `${cursorPosition.y - 112}px`,
-                    backgroundImage: `url('${IMAGE_BASE_URL}${images[selectedImage].image}')`,
+                    backgroundImage: `url('${getImageUrl(images[selectedImage])}')`,
                     backgroundPosition: `${magnifierPosition.x}% ${magnifierPosition.y}%`,
                     backgroundSize: `${imgRef.current ? imgRef.current.offsetWidth * 2.5 : 0}px ${
                       imgRef.current ? imgRef.current.offsetHeight * 2.5 : 0
@@ -333,7 +316,7 @@ const SingleProduct = () => {
                     }`}
                   >
                     <img
-                      src={`${IMAGE_BASE_URL}${img.image}`}
+                      src={getImageUrl(img)}
                       alt={`${name} thumbnail ${i + 1}`}
                       className="w-full h-full object-contain p-2 bg-white"
                     />
@@ -393,8 +376,8 @@ const SingleProduct = () => {
                 {stock > 0 ? (
                   <>
                     <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
                     </span>
                     <div>
                       <p className="text-green-700 font-semibold">In Stock</p>
@@ -403,7 +386,7 @@ const SingleProduct = () => {
                   </>
                 ) : (
                   <>
-                    <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                    <span className="w-3 h-3 bg-red-500 rounded-full" />
                     <p className="text-red-600 font-medium">Out of stock</p>
                   </>
                 )}
@@ -419,47 +402,6 @@ const SingleProduct = () => {
                 Product Description
               </h3>
               <p className="text-gray-700 leading-relaxed">{description || "No description available."}</p>
-            </div>
-
-            {/* Color Selection */}
-            <div className="bg-white rounded-3xl p-6 shadow-sm">
-              <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-3 text-lg">
-                <span className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
-                  <FaPalette className="w-4 h-4 text-white" />
-                </span>
-                Select Color
-              </h3>
-              <div className="flex flex-wrap gap-5">
-                {availableColors.map((color) => (
-                  <button
-                    key={color.name}
-                    onClick={() => setSelectedColor(color.name)}
-                    className="relative group"
-                    title={color.name}
-                  >
-                    <div
-                      className={`w-9 h-9 rounded-xl transition-all shadow-sm ${
-                        selectedColor === color.name
-                          ? "ring-4 ring-orange-600 ring-offset-2 scale-110"
-                          : "hover:scale-110"
-                      }`}
-                      style={{
-                        backgroundColor: color.hex,
-                        border: color.hex === "#FFFFFF" ? "2px solid #e5e7eb" : "none",
-                      }}
-                    />
-                    {selectedColor === color.name && (
-                      <span className="absolute -top-2 -right-2 bg-orange-600 text-white rounded-full p-1 shadow">
-                        <FaCheck className="w-2.5 h-2.5" />
-                      </span>
-                    )}
-                    <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
-                      {color.name}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              {!selectedColor && <p className="text-red-500 text-sm mt-4">Please select a color</p>}
             </div>
 
             {/* Size Selection */}
@@ -517,69 +459,57 @@ const SingleProduct = () => {
                   </div>
 
                   <div className="p-8">
-                    {isUnstitch ? (
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-orange-50">
-                            <th className="border p-4 text-left">Size</th>
-                            <th className="border p-4 text-left">Length</th>
-                            <th className="border p-4 text-left">Width</th>
-                            <th className="border p-4 text-left">Fabric</th>
+                    <table className="w-full border-collapse mb-6">
+                      <thead>
+                        <tr className="bg-orange-50">
+                          <th className="border p-4 text-left">Size</th>
+                          {isUnstitch ? (
+                            <>
+                              <th className="border p-4 text-left">Length</th>
+                              <th className="border p-4 text-left">Width</th>
+                              <th className="border p-4 text-left">Fabric</th>
+                            </>
+                          ) : (
+                            <>
+                              <th className="border p-4 text-left">Bust</th>
+                              <th className="border p-4 text-left">Waist</th>
+                              <th className="border p-4 text-left">Hips</th>
+                              <th className="border p-4 text-left">Length</th>
+                            </>
+                          )}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(sizeChart).map(([size, data]) => (
+                          <tr
+                            key={size}
+                            className={`hover:bg-orange-50 cursor-pointer ${
+                              selectedSize === size ? "bg-orange-100" : ""
+                            }`}
+                            onClick={() => {
+                              setSelectedSize(size);
+                              toast.success(`Size ${size} selected`);
+                            }}
+                          >
+                            <td className="border p-4 font-semibold">{size}</td>
+                            {isUnstitch ? (
+                              <>
+                                <td className="border p-4">{data.length}"</td>
+                                <td className="border p-4">{data.width}"</td>
+                                <td className="border p-4">{data.fabric}</td>
+                              </>
+                            ) : (
+                              <>
+                                <td className="border p-4">{data.bust}"</td>
+                                <td className="border p-4">{data.waist}"</td>
+                                <td className="border p-4">{data.hips}"</td>
+                                <td className="border p-4">{data.length}"</td>
+                              </>
+                            )}
                           </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(unstitchSizeChart).map(([size, data]) => (
-                            <tr
-                              key={size}
-                              className={`hover:bg-orange-50 cursor-pointer ${
-                                selectedSize === size ? "bg-orange-100" : ""
-                              }`}
-                              onClick={() => {
-                                setSelectedSize(size);
-                                toast.success(`Size ${size} selected`);
-                              }}
-                            >
-                              <td className="border p-4 font-semibold">{size}</td>
-                              <td className="border p-4">{data.length}"</td>
-                              <td className="border p-4">{data.width}"</td>
-                              <td className="border p-4">{data.fabric}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <table className="w-full border-collapse mb-6">
-                        <thead>
-                          <tr className="bg-orange-50">
-                            <th className="border p-4 text-left">Size</th>
-                            <th className="border p-4 text-left">Bust</th>
-                            <th className="border p-4 text-left">Waist</th>
-                            <th className="border p-4 text-left">Hips</th>
-                            <th className="border p-4 text-left">Length</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(sizeChartData).map(([size, data]) => (
-                            <tr
-                              key={size}
-                              className={`hover:bg-orange-50 cursor-pointer ${
-                                selectedSize === size ? "bg-orange-100" : ""
-                              }`}
-                              onClick={() => {
-                                setSelectedSize(size);
-                                toast.success(`Size ${size} selected`);
-                              }}
-                            >
-                              <td className="border p-4 font-semibold">{size}</td>
-                              <td className="border p-4">{data.bust}"</td>
-                              <td className="border p-4">{data.waist}"</td>
-                              <td className="border p-4">{data.hips}"</td>
-                              <td className="border p-4">{data.length}"</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )}
+                        ))}
+                      </tbody>
+                    </table>
 
                     <div className="sticky bottom-0 bg-white pt-6 mt-4 border-t">
                       <button
@@ -596,8 +526,6 @@ const SingleProduct = () => {
                           ? "Out of Stock"
                           : !selectedSize
                           ? "Select Size First"
-                          : !selectedColor
-                          ? "Select Color First"
                           : addingToCart
                           ? "Adding..."
                           : "Add to Cart"}
@@ -653,34 +581,21 @@ const SingleProduct = () => {
                 </button>
               </div>
 
-              {stock > 0 && (!selectedSize || !selectedColor) && (
+              {stock > 0 && !selectedSize && (
                 <div className="mt-3 p-2 bg-yellow-50 border border-yellow-300 rounded-lg text-center">
-                  <p className="text-yellow-700 text-sm font-medium">
-                    Please select {!selectedSize && !selectedColor ? "size and color" : !selectedSize ? "size" : "color"}
-                  </p>
+                  <p className="text-yellow-700 text-sm font-medium">Please select a size</p>
                 </div>
               )}
             </div>
 
-            {/* Selected Options Summary */}
-            {(selectedSize || selectedColor) && (
+            {/* Selected Size Summary */}
+            {selectedSize && (
               <div className="p-4 bg-orange-50 border border-orange-200 rounded-2xl">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="text-sm font-bold text-orange-800">Selected:</span>
-                  {selectedSize && (
-                    <span className="px-4 py-2 bg-white border border-orange-300 rounded-full text-sm font-bold text-orange-700">
-                      Size: {selectedSize}
-                    </span>
-                  )}
-                  {selectedColor && (
-                    <span className="px-4 py-2 bg-white border border-orange-300 rounded-full text-sm font-bold text-orange-700 flex items-center gap-2">
-                      <span
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: availableColors.find((c) => c.name === selectedColor)?.hex || "#000" }}
-                      />
-                      Color: {selectedColor}
-                    </span>
-                  )}
+                  <span className="px-4 py-2 bg-white border border-orange-300 rounded-full text-sm font-bold text-orange-700">
+                    Size: {selectedSize}
+                  </span>
                 </div>
               </div>
             )}
