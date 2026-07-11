@@ -20,7 +20,7 @@ import toast from "react-hot-toast";
 import salePriceFunc from "../../helpers/Func";
 
 // Image base URL
-const IMAGE_BASE_URL = "https://django-production-126c.up.railway.app";
+const ORDER_API_URL = "https://django-production-126c.up.railway.app/api/orders/create/";
 
 const Checkout = () => {
   const dispatch = useDispatch();
