@@ -57,28 +57,52 @@ const Checkout = () => {
     { number: 3, title: "Confirm", icon: <FaCheckCircle /> }
   ];
 
-  // Get image URL helper
+  // Get image URL helper - FIXED
   const getImageUrl = (item) => {
+    console.log("🔍 Getting image for item:", item);
+    
     // Check if product has images array
     if (item.product?.images && item.product.images.length > 0) {
       const imagePath = item.product.images[0].image;
-      return imagePath ? `${IMAGE_BASE_URL}${imagePath}` : '/placeholder.jpg';
+      console.log("📸 Found image in product.images:", imagePath);
+      if (imagePath) {
+        // Check if it already has the full URL
+        if (imagePath.startsWith('http')) {
+          return imagePath;
+        }
+        // Add base URL
+        return `${IMAGE_BASE_URL}${imagePath}`;
+      }
     }
     
     // Check if product has direct image field
     if (item.product?.image) {
-      return item.product.image.startsWith('http') 
-        ? item.product.image 
-        : `${IMAGE_BASE_URL}${item.product.image}`;
+      console.log("📸 Found image in product.image:", item.product.image);
+      if (item.product.image.startsWith('http')) {
+        return item.product.image;
+      }
+      return `${IMAGE_BASE_URL}${item.product.image}`;
     }
     
     // Check if item has product_image field
     if (item.product_image) {
-      return item.product_image.startsWith('http') 
-        ? item.product_image 
-        : `${IMAGE_BASE_URL}${item.product_image}`;
+      console.log("📸 Found image in product_image:", item.product_image);
+      if (item.product_image.startsWith('http')) {
+        return item.product_image;
+      }
+      return `${IMAGE_BASE_URL}${item.product_image}`;
     }
     
+    // Check if item has image field
+    if (item.image) {
+      console.log("📸 Found image in item.image:", item.image);
+      if (item.image.startsWith('http')) {
+        return item.image;
+      }
+      return `${IMAGE_BASE_URL}${item.image}`;
+    }
+    
+    console.log("❌ No image found, using placeholder");
     return '/placeholder.jpg';
   };
 
@@ -131,6 +155,8 @@ const Checkout = () => {
     const salePrice = salePriceFunc(originalPrice, discount);
     const quantity = item.quantity || 1;
     const imageUrl = getImageUrl(item);
+    
+    console.log(`📦 Item: ${productName}, Image URL: ${imageUrl}`);
     
     return {
       productName,
@@ -224,6 +250,16 @@ const Checkout = () => {
           const { originalPrice, discount, salePrice, quantity } = getItemDetails(item);
           const productId = item.product?.id || item.product_id;
           
+          // Get image URL for the order
+          let imageUrl = '';
+          if (item.product?.images && item.product.images.length > 0) {
+            imageUrl = item.product.images[0].image || '';
+          } else if (item.product_image) {
+            imageUrl = item.product_image;
+          } else if (item.image) {
+            imageUrl = item.image;
+          }
+          
           return {
             product: productId,
             product_name: item.product?.name || item.product_name,
@@ -231,7 +267,7 @@ const Checkout = () => {
             discount_percentage: discount,
             discounted_price: salePrice,
             quantity: quantity || 1,
-            image: item.product?.images?.[0]?.image || item.product_image || ''
+            image: imageUrl
           };
         }),
         items_price: subtotal,
@@ -693,6 +729,7 @@ const Checkout = () => {
                           alt={productName}
                           className="w-full h-full object-cover"
                           onError={(e) => {
+                            console.log(`⚠️ Image failed to load: ${imageUrl}`);
                             e.target.src = '/placeholder.jpg';
                           }}
                         />
