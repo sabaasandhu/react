@@ -12,26 +12,27 @@ import {
   FaUser, 
   FaMapMarkerAlt, 
   FaPhone, 
-  FaEnvelope 
+  FaEnvelope,
+  FaWallet,
+  FaMobileAlt
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import salePriceFunc from "../../helpers/Func";
 
-// Image base URL - same as used in SingleProduct
+// Image base URL
 const IMAGE_BASE_URL = "https://django-production-126c.up.railway.app";
 
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  const { cartItems, loading, error, hasLoaded } = useSelector(state => state.cartSlice);
+  const { cartItems, loading, hasLoaded } = useSelector(state => state.cartSlice);
   const { user } = useSelector(state => state.auth);
   
-  const [step, setStep] = useState(1); // 1: Address, 2: Payment, 3: Confirm
+  const [step, setStep] = useState(1);
   const [processing, setProcessing] = useState(false);
   const initialCheckDone = useRef(false);
 
-  // Form states
   const [shippingAddress, setShippingAddress] = useState({
     fullName: user?.username || "",
     email: user?.email || "",
@@ -44,12 +45,6 @@ const Checkout = () => {
   });
   
   const [paymentMethod, setPaymentMethod] = useState("cashOnDelivery");
-  const [paymentDetails, setPaymentDetails] = useState({
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
-    nameOnCard: ""
-  });
   
   const steps = [
     { number: 1, title: "Shipping", icon: <FaTruck /> },
@@ -57,27 +52,21 @@ const Checkout = () => {
     { number: 3, title: "Confirm", icon: <FaCheckCircle /> }
   ];
 
-  // Get image URL helper - FIXED
+  // Get image URL helper
   const getImageUrl = (item) => {
-    console.log("🔍 Getting image for item:", item);
-    
     // Check if product has images array
     if (item.product?.images && item.product.images.length > 0) {
       const imagePath = item.product.images[0].image;
-      console.log("📸 Found image in product.images:", imagePath);
       if (imagePath) {
-        // Check if it already has the full URL
         if (imagePath.startsWith('http')) {
           return imagePath;
         }
-        // Add base URL
         return `${IMAGE_BASE_URL}${imagePath}`;
       }
     }
     
     // Check if product has direct image field
     if (item.product?.image) {
-      console.log("📸 Found image in product.image:", item.product.image);
       if (item.product.image.startsWith('http')) {
         return item.product.image;
       }
@@ -86,7 +75,6 @@ const Checkout = () => {
     
     // Check if item has product_image field
     if (item.product_image) {
-      console.log("📸 Found image in product_image:", item.product_image);
       if (item.product_image.startsWith('http')) {
         return item.product_image;
       }
@@ -95,14 +83,12 @@ const Checkout = () => {
     
     // Check if item has image field
     if (item.image) {
-      console.log("📸 Found image in item.image:", item.image);
       if (item.image.startsWith('http')) {
         return item.image;
       }
       return `${IMAGE_BASE_URL}${item.image}`;
     }
     
-    console.log("❌ No image found, using placeholder");
     return '/placeholder.jpg';
   };
 
@@ -132,31 +118,22 @@ const Checkout = () => {
 
   // Get item details with proper discount handling
   const getItemDetails = (item) => {
-    // Get product name
     const productName = item.product?.name || item.product_name || "Product";
-    
-    // Get original price - check multiple possible locations
     const originalPrice = parseFloat(
       item.product?.price || 
       item.product_price || 
       item.price || 
       0
     );
-    
-    // Get discount from multiple possible fields
     const discount = parseFloat(
       item.product?.discount || 
       item.product_discount || 
       item.discount || 
       0
     );
-    
-    // Calculate sale price
     const salePrice = salePriceFunc(originalPrice, discount);
     const quantity = item.quantity || 1;
     const imageUrl = getImageUrl(item);
-    
-    console.log(`📦 Item: ${productName}, Image URL: ${imageUrl}`);
     
     return {
       productName,
@@ -168,7 +145,7 @@ const Checkout = () => {
     };
   };
 
-  // Calculate totals with proper discount handling
+  // Calculate totals
   const calculateTotals = () => {
     if (!cartItems || cartItems.length === 0) { 
       return { 
@@ -193,9 +170,8 @@ const Checkout = () => {
       }
     });
     
-    // Free shipping on orders above Rs. 5000
     const shipping = subtotal > 5000 ? 0 : 200;
-    const tax = subtotal * 0.05; // 5% tax
+    const tax = subtotal * 0.05;
     const total = subtotal + shipping + tax;
     
     return { 
@@ -235,12 +211,12 @@ const Checkout = () => {
         }
       };
 
-      // Prepare order data with proper structure matching backend expectations
+      // Prepare order data
       const orderData = {
         customer_name: shippingAddress.fullName,
         customer_email: shippingAddress.email,
         customer_phone: shippingAddress.phone,
-        shipping_address: shippingAddress.address,
+        shipping_address: `${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.state || ''}, ${shippingAddress.country}`,
         shipping_city: shippingAddress.city,
         shipping_state: shippingAddress.state || "",
         shipping_postal_code: shippingAddress.postalCode || "",
@@ -250,16 +226,6 @@ const Checkout = () => {
           const { originalPrice, discount, salePrice, quantity } = getItemDetails(item);
           const productId = item.product?.id || item.product_id;
           
-          // Get image URL for the order
-          let imageUrl = '';
-          if (item.product?.images && item.product.images.length > 0) {
-            imageUrl = item.product.images[0].image || '';
-          } else if (item.product_image) {
-            imageUrl = item.product_image;
-          } else if (item.image) {
-            imageUrl = item.image;
-          }
-          
           return {
             product: productId,
             product_name: item.product?.name || item.product_name,
@@ -267,7 +233,6 @@ const Checkout = () => {
             discount_percentage: discount,
             discounted_price: salePrice,
             quantity: quantity || 1,
-            image: imageUrl
           };
         }),
         items_price: subtotal,
@@ -277,7 +242,7 @@ const Checkout = () => {
         total_price: total,
       };
       
-      console.log("📦 Sending order data:", orderData);
+      console.log("📦 Sending order data:", JSON.stringify(orderData, null, 2));
       
       const token = localStorage.getItem("access");
       if (!token) {
@@ -286,8 +251,9 @@ const Checkout = () => {
         return;
       }
       
+      // Using the corrected orderApis.create URL (with /api/)
       const response = await axios.post(
-        orderApis.create, 
+        orderApis.create,
         orderData,
         {
           headers: {
@@ -299,15 +265,12 @@ const Checkout = () => {
       
       console.log("✅ Order API response:", response.data);
       
-      // Clear cart from Redux
       dispatch(empptyCart());
-      
       toast.success("🎉 Order placed successfully!");
       
       navigate("/order-confirmation", { 
         state: { 
-          orderId: response.data.order?.order_number || response.data.order?.id,
-          orderData: response.data.order
+          order: response.data.order || response.data
         }
       });
       
@@ -318,7 +281,7 @@ const Checkout = () => {
         const errors = error.response.data;
         if (typeof errors === 'object') {
           Object.keys(errors).forEach(key => {
-            toast.error(`${key}: ${errors[key]}`);
+            toast.error(`${key}: ${JSON.stringify(errors[key])}`);
           });
         } else {
           toast.error(errors?.message || "Validation error");
@@ -326,6 +289,9 @@ const Checkout = () => {
       } else if (error.response?.status === 401) {
         toast.error("Session expired. Please login again.");
         navigate("/login");
+      } else if (error.response?.status === 404) {
+        toast.error("Order API not found. Please check the URL.");
+        console.error("Check that orderApis.create is:", orderApis.create);
       } else {
         toast.error(error.response?.data?.error || "Failed to place order. Please try again.");
       }
@@ -619,6 +585,31 @@ const Checkout = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* EasyPaisa */}
+                  <div className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
+                    paymentMethod === "easypaisa" 
+                      ? "border-teal-500 bg-teal-50 shadow-md shadow-teal-100" 
+                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                  }`}
+                  onClick={() => setPaymentMethod("easypaisa")}
+                  >
+                    <div className="flex items-center">
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 flex-shrink-0 ${
+                        paymentMethod === "easypaisa" 
+                          ? "border-teal-500" 
+                          : "border-gray-300"
+                      }`}>
+                        {paymentMethod === "easypaisa" && (
+                          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-500"></div>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-800">EasyPaisa</h3>
+                        <p className="text-sm text-gray-600">Pay via EasyPaisa wallet</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -633,7 +624,6 @@ const Checkout = () => {
                   <h2 className="text-2xl font-bold text-gray-800">Review Your Order</h2>
                 </div>
                 
-                {/* Shipping Address Review */}
                 <div className="mb-6">
                   <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center">
                     <FaMapMarkerAlt className="text-teal-600 mr-2" />
@@ -649,7 +639,6 @@ const Checkout = () => {
                   </div>
                 </div>
                 
-                {/* Payment Method Review */}
                 <div>
                   <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center">
                     <FaCreditCard className="text-teal-600 mr-2" />
@@ -660,11 +649,13 @@ const Checkout = () => {
                       {paymentMethod === "cashOnDelivery" && "Cash on Delivery"}
                       {paymentMethod === "card" && "Credit/Debit Card"}
                       {paymentMethod === "jazzcash" && "JazzCash"}
+                      {paymentMethod === "easypaisa" && "EasyPaisa"}
                     </p>
                     <p className="text-gray-600 text-sm mt-1">
                       {paymentMethod === "cashOnDelivery" && "Pay when you receive your order"}
                       {paymentMethod === "card" && "Payment will be processed securely"}
                       {paymentMethod === "jazzcash" && "You'll be redirected to JazzCash"}
+                      {paymentMethod === "easypaisa" && "You'll be redirected to EasyPaisa"}
                     </p>
                   </div>
                 </div>
@@ -716,7 +707,6 @@ const Checkout = () => {
             <div className="bg-white rounded-2xl shadow-xl p-6 sticky top-6 border border-teal-100">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
               
-              {/* Order Items */}
               <div className="max-h-80 overflow-y-auto mb-6 custom-scrollbar">
                 {cartItems.map((item, index) => {
                   const { productName, originalPrice, discount, salePrice, quantity, imageUrl } = getItemDetails(item);
@@ -729,7 +719,6 @@ const Checkout = () => {
                           alt={productName}
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            console.log(`⚠️ Image failed to load: ${imageUrl}`);
                             e.target.src = '/placeholder.jpg';
                           }}
                         />
@@ -772,14 +761,12 @@ const Checkout = () => {
                 })}
               </div>
               
-              {/* Order Totals */}
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
                   <span>Rs. {subtotal.toLocaleString()}</span>
                 </div>
                 
-                {/* Discount Savings */}
                 {discountSavings > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount Savings</span>
@@ -805,7 +792,6 @@ const Checkout = () => {
                 </div>
               </div>
               
-              {/* Security Badge */}
               <div className="bg-gradient-to-r from-gray-50 to-teal-50/50 p-4 rounded-xl border border-teal-100">
                 <div className="flex items-center mb-2">
                   <FaLock className="text-green-600 mr-2" />
@@ -816,7 +802,6 @@ const Checkout = () => {
                 </p>
               </div>
               
-              {/* Return Policy */}
               <div className="mt-6 space-y-1 text-center text-sm text-gray-500">
                 <p className="flex items-center justify-center gap-1">✅ 7-day Exchange policy</p>
                 <p className="flex items-center justify-center gap-1">✅ Free shipping on orders over Rs. 5,000</p>
@@ -827,7 +812,6 @@ const Checkout = () => {
         </div>
       </div>
 
-      {/* Custom Scrollbar Styles */}
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
