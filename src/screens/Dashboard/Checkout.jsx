@@ -17,6 +17,9 @@ import {
 import toast from "react-hot-toast";
 import salePriceFunc from "../../helpers/Func";
 
+// Image base URL - same as used in SingleProduct
+const IMAGE_BASE_URL = "https://django-production-126c.up.railway.app";
+
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -54,9 +57,32 @@ const Checkout = () => {
     { number: 3, title: "Confirm", icon: <FaCheckCircle /> }
   ];
 
-  useEffect(() => {
-    console.log("🔄 Checkout useEffect called");
+  // Get image URL helper
+  const getImageUrl = (item) => {
+    // Check if product has images array
+    if (item.product?.images && item.product.images.length > 0) {
+      const imagePath = item.product.images[0].image;
+      return imagePath ? `${IMAGE_BASE_URL}${imagePath}` : '/placeholder.jpg';
+    }
     
+    // Check if product has direct image field
+    if (item.product?.image) {
+      return item.product.image.startsWith('http') 
+        ? item.product.image 
+        : `${IMAGE_BASE_URL}${item.product.image}`;
+    }
+    
+    // Check if item has product_image field
+    if (item.product_image) {
+      return item.product_image.startsWith('http') 
+        ? item.product_image 
+        : `${IMAGE_BASE_URL}${item.product_image}`;
+    }
+    
+    return '/placeholder.jpg';
+  };
+
+  useEffect(() => {
     if (!initialCheckDone.current) {
       initialCheckDone.current = true;
       
@@ -66,7 +92,6 @@ const Checkout = () => {
           
           setTimeout(() => {
             if (hasLoaded && (!cartItems || cartItems.length === 0)) {
-              console.log("Cart empty after load, redirecting...");
               toast.error("Your cart is empty");
               navigate("/cart");
             }
@@ -81,12 +106,20 @@ const Checkout = () => {
     }
   }, [dispatch, navigate, hasLoaded, cartItems]);
 
-  // Calculate item price with discount
+  // Get item details with proper discount handling
   const getItemDetails = (item) => {
-    const productName = item.product?.name || item.product_name;
-    const originalPrice = parseFloat(item.product?.price || item.product_price || 0);
+    // Get product name
+    const productName = item.product?.name || item.product_name || "Product";
     
-    // Get discount from multiple possible fields (Navigation aur Cart ki tarah)
+    // Get original price - check multiple possible locations
+    const originalPrice = parseFloat(
+      item.product?.price || 
+      item.product_price || 
+      item.price || 
+      0
+    );
+    
+    // Get discount from multiple possible fields
     const discount = parseFloat(
       item.product?.discount || 
       item.product_discount || 
@@ -94,13 +127,10 @@ const Checkout = () => {
       0
     );
     
+    // Calculate sale price
     const salePrice = salePriceFunc(originalPrice, discount);
     const quantity = item.quantity || 1;
-   const imageUrl = item.product_image 
-  ? `http://localhost:8000${item.product_image}`
-  : (item.product?.images?.[0]?.image 
-      ? `http://localhost:8000${item.product.images[0].image}` 
-      : '/default-product.jpg');
+    const imageUrl = getImageUrl(item);
     
     return {
       productName,
@@ -112,15 +142,17 @@ const Checkout = () => {
     };
   };
 
-  // Calculate totals with discount
+  // Calculate totals with proper discount handling
   const calculateTotals = () => {
-    if (!cartItems || cartItems.length === 0) return { 
-      subtotal: 0, 
-      discountSavings: 0,
-      shipping: 0, 
-      tax: 0, 
-      total: 0 
-    };
+    if (!cartItems || cartItems.length === 0) { 
+      return { 
+        subtotal: 0, 
+        discountSavings: 0,
+        shipping: 0, 
+        tax: 0, 
+        total: 0 
+      };
+    }
     
     let subtotal = 0;
     let discountSavings = 0;
@@ -135,6 +167,7 @@ const Checkout = () => {
       }
     });
     
+    // Free shipping on orders above Rs. 5000
     const shipping = subtotal > 5000 ? 0 : 200;
     const tax = subtotal * 0.05; // 5% tax
     const total = subtotal + shipping + tax;
@@ -176,40 +209,47 @@ const Checkout = () => {
         }
       };
 
-      // Prepare order data with discounted prices
+      // Prepare order data with proper structure matching backend expectations
       const orderData = {
         customer_name: shippingAddress.fullName,
         customer_email: shippingAddress.email,
         customer_phone: shippingAddress.phone,
         shipping_address: shippingAddress.address,
         shipping_city: shippingAddress.city,
-        shipping_state: shippingAddress.state,
-        shipping_postal_code: shippingAddress.postalCode,
-        shipping_country: shippingAddress.country,
-        payment_method: getBackendPaymentMethod(), 
+        shipping_state: shippingAddress.state || "",
+        shipping_postal_code: shippingAddress.postalCode || "",
+        shipping_country: shippingAddress.country || "Pakistan",
+        payment_method: getBackendPaymentMethod(),
         items: cartItems.map(item => {
           const { originalPrice, discount, salePrice, quantity } = getItemDetails(item);
+          const productId = item.product?.id || item.product_id;
           
           return {
-            product: item.product?.id || item.product_id,
+            product: productId,
             product_name: item.product?.name || item.product_name,
-            original_price: originalPrice,  // Original price
-            discount_percentage: discount,   // Discount percentage
-            discounted_price: salePrice,     // Price after discount
+            original_price: originalPrice,
+            discount_percentage: discount,
+            discounted_price: salePrice,
             quantity: quantity || 1,
             image: item.product?.images?.[0]?.image || item.product_image || ''
           };
         }),
-        items_price: subtotal,      
-        discount_savings: discountSavings, // Total discount savings
-        tax_price: tax,            
-        shipping_price: shipping,  
-        total_price: total, 
+        items_price: subtotal,
+        discount_savings: discountSavings,
+        tax_price: tax,
+        shipping_price: shipping,
+        total_price: total,
       };
       
-      console.log("Sending order data:", orderData);
+      console.log("📦 Sending order data:", orderData);
       
       const token = localStorage.getItem("access");
+      if (!token) {
+        toast.error("Please login to place order");
+        navigate("/login");
+        return;
+      }
+      
       const response = await axios.post(
         orderApis.create, 
         orderData,
@@ -221,7 +261,7 @@ const Checkout = () => {
         }
       );
       
-      console.log("Order API response:", response.data);
+      console.log("✅ Order API response:", response.data);
       
       // Clear cart from Redux
       dispatch(empptyCart());
@@ -230,7 +270,7 @@ const Checkout = () => {
       
       navigate("/order-confirmation", { 
         state: { 
-          orderId: response.data.order.order_number,
+          orderId: response.data.order?.order_number || response.data.order?.id,
           orderData: response.data.order
         }
       });
@@ -245,8 +285,11 @@ const Checkout = () => {
             toast.error(`${key}: ${errors[key]}`);
           });
         } else {
-          toast.error(errors || "Validation error");
+          toast.error(errors?.message || "Validation error");
         }
+      } else if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        navigate("/login");
       } else {
         toast.error(error.response?.data?.error || "Failed to place order. Please try again.");
       }
@@ -255,6 +298,7 @@ const Checkout = () => {
     }
   };
 
+  // Loading state
   if ((loading && !hasLoaded)) {
     return (
       <div className="container mx-auto p-6 flex justify-center items-center min-h-screen">
@@ -266,8 +310,27 @@ const Checkout = () => {
     );
   }
 
+  // Empty cart check
+  if (!cartItems || cartItems.length === 0) {
+    return (
+      <div className="container mx-auto p-6 flex justify-center items-center min-h-screen">
+        <div className="text-center bg-white p-8 rounded-xl shadow-lg max-w-md">
+          <div className="text-6xl mb-4">🛒</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Your cart is empty</h2>
+          <p className="text-gray-600 mb-6">Add some items to your cart to proceed with checkout</p>
+          <button
+            onClick={() => navigate("/")}
+            className="px-6 py-3 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition"
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50/30">
       <div className="container mx-auto p-4 md:p-6">
         
         {/* Progress Steps */}
@@ -275,9 +338,9 @@ const Checkout = () => {
           <div className="flex justify-between relative">
             {steps.map((s, index) => (
               <div key={s.number} className="flex flex-col items-center z-10">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg ${
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg transition-all duration-300 ${
                   step >= s.number 
-                    ? "bg-teal-600 text-white" 
+                    ? "bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-600/30" 
                     : "bg-gray-200 text-gray-500"
                 }`}>
                   {s.icon}
@@ -291,7 +354,7 @@ const Checkout = () => {
             ))}
             <div className="absolute top-6 left-12 right-12 h-1 bg-gray-200 -z-10">
               <div 
-                className="h-full bg-teal-600 transition-all duration-500"
+                className="h-full bg-gradient-to-r from-teal-600 to-teal-500 transition-all duration-500"
                 style={{ width: `${(step - 1) * 50}%` }}
               ></div>
             </div>
@@ -305,9 +368,11 @@ const Checkout = () => {
             
             {/* Step 1: Shipping Address */}
             {step === 1 && (
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-xl p-6 border border-teal-100">
                 <div className="flex items-center mb-6">
-                  <FaMapMarkerAlt className="text-teal-600 text-xl mr-3" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-600/30 mr-4">
+                    <FaMapMarkerAlt className="text-white text-xl" />
+                  </div>
                   <h2 className="text-2xl font-bold text-gray-800">Shipping Address</h2>
                 </div>
                 
@@ -316,40 +381,51 @@ const Checkout = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Full Name *
                     </label>
-                    <input
-                      type="text"
-                      value={shippingAddress.fullName}
-                      onChange={(e) => setShippingAddress({...shippingAddress, fullName: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                      required
-                    />
+                    <div className="relative">
+                      <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="text"
+                        value={shippingAddress.fullName}
+                        onChange={(e) => setShippingAddress({...shippingAddress, fullName: e.target.value})}
+                        className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                        placeholder="John Doe"
+                        required
+                      />
+                    </div>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Email *
                     </label>
-                    <input
-                      type="email"
-                      value={shippingAddress.email}
-                      onChange={(e) => setShippingAddress({...shippingAddress, email: e.target.value})}
-                      className="w-full text-black border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                      required
-                    />
+                    <div className="relative">
+                      <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="email"
+                        value={shippingAddress.email}
+                        onChange={(e) => setShippingAddress({...shippingAddress, email: e.target.value})}
+                        className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                        placeholder="john@example.com"
+                        required
+                      />
+                    </div>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Phone Number *
                     </label>
-                    <input
-                      type="tel"
-                      value={shippingAddress.phone}
-                      onChange={(e) => setShippingAddress({...shippingAddress, phone: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                      placeholder="03XX XXXXXXX"
-                      required
-                    />
+                    <div className="relative">
+                      <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="tel"
+                        value={shippingAddress.phone}
+                        onChange={(e) => setShippingAddress({...shippingAddress, phone: e.target.value})}
+                        className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                        placeholder="03XX XXXXXXX"
+                        required
+                      />
+                    </div>
                   </div>
                   
                   <div>
@@ -360,7 +436,8 @@ const Checkout = () => {
                       type="text"
                       value={shippingAddress.city}
                       onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                      placeholder="Lahore"
                       required
                     />
                   </div>
@@ -373,7 +450,7 @@ const Checkout = () => {
                       value={shippingAddress.address}
                       onChange={(e) => setShippingAddress({...shippingAddress, address: e.target.value})}
                       rows="3"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
                       placeholder="House #, Street, Area"
                       required
                     />
@@ -384,29 +461,31 @@ const Checkout = () => {
             
             {/* Step 2: Payment Method */}
             {step === 2 && (
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-xl p-6 border border-teal-100">
                 <div className="flex items-center mb-6">
-                  <FaCreditCard className="text-teal-600 text-xl mr-3" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-600/30 mr-4">
+                    <FaCreditCard className="text-white text-xl" />
+                  </div>
                   <h2 className="text-2xl font-bold text-gray-800">Payment Method</h2>
                 </div>
                 
                 <div className="space-y-4">
                   {/* Cash on Delivery */}
-                  <div className={`border-2 rounded-lg p-4 cursor-pointer transition ${
+                  <div className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
                     paymentMethod === "cashOnDelivery" 
-                      ? "border-teal-500 bg-teal-50" 
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-teal-500 bg-teal-50 shadow-md shadow-teal-100" 
+                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
                   }`}
                   onClick={() => setPaymentMethod("cashOnDelivery")}
                   >
                     <div className="flex items-center">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 flex-shrink-0 ${
                         paymentMethod === "cashOnDelivery" 
                           ? "border-teal-500" 
                           : "border-gray-300"
                       }`}>
                         {paymentMethod === "cashOnDelivery" && (
-                          <div className="w-3 h-3 rounded-full bg-teal-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-500"></div>
                         )}
                       </div>
                       <div>
@@ -417,21 +496,21 @@ const Checkout = () => {
                   </div>
                   
                   {/* Credit/Debit Card */}
-                  <div className={`border-2 rounded-lg p-4 cursor-pointer transition ${
+                  <div className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
                     paymentMethod === "card" 
-                      ? "border-teal-500 bg-teal-50" 
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-teal-500 bg-teal-50 shadow-md shadow-teal-100" 
+                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
                   }`}
                   onClick={() => setPaymentMethod("card")}
                   >
                     <div className="flex items-center mb-4">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 flex-shrink-0 ${
                         paymentMethod === "card" 
                           ? "border-teal-500" 
                           : "border-gray-300"
                       }`}>
                         {paymentMethod === "card" && (
-                          <div className="w-3 h-3 rounded-full bg-teal-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-500"></div>
                         )}
                       </div>
                       <div>
@@ -449,7 +528,7 @@ const Checkout = () => {
                           <input
                             type="text"
                             placeholder="1234 5678 9012 3456"
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                           />
                         </div>
                         
@@ -461,7 +540,7 @@ const Checkout = () => {
                             <input
                               type="text"
                               placeholder="MM/YY"
-                              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                              className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                             />
                           </div>
                           
@@ -472,7 +551,7 @@ const Checkout = () => {
                             <input
                               type="text"
                               placeholder="123"
-                              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                              className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                             />
                           </div>
                         </div>
@@ -481,21 +560,21 @@ const Checkout = () => {
                   </div>
                   
                   {/* JazzCash */}
-                  <div className={`border-2 rounded-lg p-4 cursor-pointer transition ${
+                  <div className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
                     paymentMethod === "jazzcash" 
-                      ? "border-teal-500 bg-teal-50" 
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-teal-500 bg-teal-50 shadow-md shadow-teal-100" 
+                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
                   }`}
                   onClick={() => setPaymentMethod("jazzcash")}
                   >
                     <div className="flex items-center">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 flex-shrink-0 ${
                         paymentMethod === "jazzcash" 
                           ? "border-teal-500" 
                           : "border-gray-300"
                       }`}>
                         {paymentMethod === "jazzcash" && (
-                          <div className="w-3 h-3 rounded-full bg-teal-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-500"></div>
                         )}
                       </div>
                       <div>
@@ -510,17 +589,22 @@ const Checkout = () => {
             
             {/* Step 3: Order Review */}
             {step === 3 && (
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-xl p-6 border border-teal-100">
                 <div className="flex items-center mb-6">
-                  <FaCheckCircle className="text-teal-600 text-xl mr-3" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-teal-600 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-600/30 mr-4">
+                    <FaCheckCircle className="text-white text-xl" />
+                  </div>
                   <h2 className="text-2xl font-bold text-gray-800">Review Your Order</h2>
                 </div>
                 
                 {/* Shipping Address Review */}
                 <div className="mb-6">
-                  <h3 className="font-bold text-lg text-gray-800 mb-3">Shipping Address</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="font-medium">{shippingAddress.fullName}</p>
+                  <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center">
+                    <FaMapMarkerAlt className="text-teal-600 mr-2" />
+                    Shipping Address
+                  </h3>
+                  <div className="bg-gradient-to-r from-gray-50 to-teal-50/50 p-4 rounded-xl border border-teal-100">
+                    <p className="font-bold text-gray-800">{shippingAddress.fullName}</p>
                     <p className="text-gray-600">{shippingAddress.address}</p>
                     <p className="text-gray-600">{shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}</p>
                     <p className="text-gray-600">{shippingAddress.country}</p>
@@ -531,9 +615,12 @@ const Checkout = () => {
                 
                 {/* Payment Method Review */}
                 <div>
-                  <h3 className="font-bold text-lg text-gray-800 mb-3">Payment Method</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="font-medium capitalize">
+                  <h3 className="font-bold text-lg text-gray-800 mb-3 flex items-center">
+                    <FaCreditCard className="text-teal-600 mr-2" />
+                    Payment Method
+                  </h3>
+                  <div className="bg-gradient-to-r from-gray-50 to-teal-50/50 p-4 rounded-xl border border-teal-100">
+                    <p className="font-bold text-gray-800 capitalize">
                       {paymentMethod === "cashOnDelivery" && "Cash on Delivery"}
                       {paymentMethod === "card" && "Credit/Debit Card"}
                       {paymentMethod === "jazzcash" && "JazzCash"}
@@ -553,7 +640,7 @@ const Checkout = () => {
               {step > 1 && (
                 <button
                   onClick={() => setStep(step - 1)}
-                  className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+                  className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all hover:shadow-md"
                 >
                   ← Back
                 </button>
@@ -562,7 +649,7 @@ const Checkout = () => {
               {step < 3 ? (
                 <button
                   onClick={handleNextStep}
-                  className="ml-auto px-8 py-3 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 transition shadow-md hover:shadow-lg"
+                  className="ml-auto px-8 py-3 bg-gradient-to-r from-teal-600 to-teal-500 text-white font-bold rounded-xl hover:from-teal-700 hover:to-teal-600 transition-all shadow-lg shadow-teal-600/30 hover:shadow-xl"
                 >
                   Continue to {step === 1 ? "Payment" : "Review"} →
                 </button>
@@ -570,17 +657,17 @@ const Checkout = () => {
                 <button
                   onClick={handlePlaceOrder}
                   disabled={processing}
-                  className="ml-auto px-8 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center"
+                  className="ml-auto px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-bold rounded-xl hover:from-green-700 hover:to-emerald-600 transition-all shadow-lg shadow-green-600/30 hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {processing ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
                       Processing...
                     </>
                   ) : (
                     <>
-                      <FaLock className="mr-2" />
-                      Place Order 
+                      <FaLock className="text-sm" />
+                      Place Order
                     </>
                   )}
                 </button>
@@ -590,28 +677,27 @@ const Checkout = () => {
           
           {/* Right Column: Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+            <div className="bg-white rounded-2xl shadow-xl p-6 sticky top-6 border border-teal-100">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
               
               {/* Order Items */}
-              <div className="max-h-80 overflow-y-auto mb-6">
+              <div className="max-h-80 overflow-y-auto mb-6 custom-scrollbar">
                 {cartItems.map((item, index) => {
                   const { productName, originalPrice, discount, salePrice, quantity, imageUrl } = getItemDetails(item);
                   
                   return (
-                    <div key={index} className="flex items-center py-3 border-b border-gray-100">
-                      <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                    <div key={index} className="flex items-center py-3 border-b border-gray-100 last:border-0">
+                      <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
                         <img 
-    src={imageUrl.startsWith('/') ? `http://localhost:8000${imageUrl}` : imageUrl} 
-    alt={productName}
-    className="w-full h-full object-cover"
-    onError={(e) => {
-      e.target.src = '/default-product.jpg';
-    }}
-  />
-
+                          src={imageUrl}
+                          alt={productName}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = '/placeholder.jpg';
+                          }}
+                        />
                       </div>
-                      <div className="ml-4 flex-1">
+                      <div className="ml-4 flex-1 min-w-0">
                         <h4 className="font-medium text-gray-800 text-sm line-clamp-2">
                           {productName}
                         </h4>
@@ -619,7 +705,7 @@ const Checkout = () => {
                           <p className="text-teal-600 font-bold text-sm">
                             Rs. {salePrice.toLocaleString()} 
                             {discount > 0 && (
-                              <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded ml-2">
+                              <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full ml-2">
                                 -{discount}%
                               </span>
                             )}
@@ -634,8 +720,8 @@ const Checkout = () => {
                           Qty: {quantity}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-sm">
+                      <div className="text-right flex-shrink-0 ml-2">
+                        <p className="font-bold text-sm text-gray-800">
                           Rs. {(salePrice * quantity).toLocaleString()}
                         </p>
                         {discount > 0 && (
@@ -666,24 +752,27 @@ const Checkout = () => {
                 
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
-                  <span>{shipping === 0 ? "FREE" : `Rs. ${shipping.toLocaleString()}`}</span>
+                  <span className="font-bold">{shipping === 0 ? "FREE" : `Rs. ${shipping.toLocaleString()}`}</span>
                 </div>
                 
-              
+                <div className="flex justify-between text-gray-600">
+                  <span>Tax</span>
+                  <span>Rs. {tax.toLocaleString()}</span>
+                </div>
                 
-                <div className="pt-4 border-t border-gray-200">
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
+                <div className="pt-4 border-t-2 border-teal-200">
+                  <div className="flex justify-between text-xl font-bold">
+                    <span className="text-gray-800">Total</span>
                     <span className="text-teal-600">Rs. {total.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
               
               {/* Security Badge */}
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="bg-gradient-to-r from-gray-50 to-teal-50/50 p-4 rounded-xl border border-teal-100">
                 <div className="flex items-center mb-2">
                   <FaLock className="text-green-600 mr-2" />
-                  <span className="font-medium text-gray-800">Secure Checkout</span>
+                  <span className="font-bold text-gray-800">Secure Checkout</span>
                 </div>
                 <p className="text-xs text-gray-600">
                   Your personal and payment information is encrypted and secure.
@@ -691,15 +780,33 @@ const Checkout = () => {
               </div>
               
               {/* Return Policy */}
-              <div className="mt-6 text-center text-sm text-gray-500">
-                <p>✅ 7-day Exchange policy</p>
-                <p>✅ Free shipping on orders over Rs. 5,000</p>
-                <p>✅ 24/7 customer support</p>
+              <div className="mt-6 space-y-1 text-center text-sm text-gray-500">
+                <p className="flex items-center justify-center gap-1">✅ 7-day Exchange policy</p>
+                <p className="flex items-center justify-center gap-1">✅ Free shipping on orders over Rs. 5,000</p>
+                <p className="flex items-center justify-center gap-1">✅ 24/7 customer support</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Custom Scrollbar Styles */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #14b8a6;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #0d9488;
+        }
+      `}</style>
     </div>
   );
 };
