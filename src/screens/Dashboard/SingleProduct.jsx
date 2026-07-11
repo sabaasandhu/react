@@ -97,14 +97,26 @@ const SingleProduct = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const MAGNIFIER_SIZE = 160;
+
   const handleMouseEnter = () => setShowMagnifier(true);
   const handleMouseLeave = () => setShowMagnifier(false);
   const handleMouseMove = (e) => {
-    const { left, top, width, height } = e.target.getBoundingClientRect();
-    const x = ((e.pageX - left) / width) * 100;
-    const y = ((e.pageY - top) / height) * 100;
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const relX = e.clientX - left;
+    const relY = e.clientY - top;
+
+    const x = (relX / width) * 100;
+    const y = (relY / height) * 100;
     setMagnifierPosition({ x, y });
-    setCursorPosition({ x: e.pageX - left, y: e.pageY - top });
+
+    // Clamp so the lens stays fully inside the image box instead of
+    // spilling past the edges (that spillover was making it look like a
+    // second, oversized image sliding in from below)
+    const half = MAGNIFIER_SIZE / 2;
+    const clampedX = Math.min(Math.max(relX, half), width - half);
+    const clampedY = Math.min(Math.max(relY, half), height - half);
+    setCursorPosition({ x: clampedX, y: clampedY });
   };
 
   const shareOnWhatsApp = () => {
@@ -252,7 +264,7 @@ const SingleProduct = () => {
           {/* Left: Product Images */}
           <div className="space-y-4">
             <div
-              className="relative aspect-square bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100"
+              className="relative aspect-square bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100 flex items-center justify-center"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
@@ -261,19 +273,21 @@ const SingleProduct = () => {
                 ref={imgRef}
                 src={getImageUrl(images?.[selectedImage])}
                 alt={name}
-                className="w-full h-full object-contain p-8"
+                className="w-full h-full object-contain p-4 sm:p-8"
               />
 
               {showMagnifier && images?.[selectedImage] && (
                 <div
-                  className="absolute pointer-events-none w-56 h-56 border-4 border-white rounded-full overflow-hidden shadow-2xl"
+                  className="hidden sm:block absolute pointer-events-none rounded-full border-2 border-white shadow-xl overflow-hidden"
                   style={{
-                    left: `${cursorPosition.x - 112}px`,
-                    top: `${cursorPosition.y - 112}px`,
+                    width: `${MAGNIFIER_SIZE}px`,
+                    height: `${MAGNIFIER_SIZE}px`,
+                    left: `${cursorPosition.x - MAGNIFIER_SIZE / 2}px`,
+                    top: `${cursorPosition.y - MAGNIFIER_SIZE / 2}px`,
                     backgroundImage: `url('${getImageUrl(images[selectedImage])}')`,
                     backgroundPosition: `${magnifierPosition.x}% ${magnifierPosition.y}%`,
-                    backgroundSize: `${imgRef.current ? imgRef.current.offsetWidth * 2.5 : 0}px ${
-                      imgRef.current ? imgRef.current.offsetHeight * 2.5 : 0
+                    backgroundSize: `${imgRef.current ? imgRef.current.offsetWidth * 2 : 0}px ${
+                      imgRef.current ? imgRef.current.offsetHeight * 2 : 0
                     }px`,
                     zIndex: 50,
                   }}
