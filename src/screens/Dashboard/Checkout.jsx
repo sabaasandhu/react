@@ -322,7 +322,7 @@ const Checkout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-teal-50/30 text-black">
       <div className="container mx-auto p-4 md:p-6">
         
         <div className="max-w-4xl mx-auto mb-8">
@@ -367,7 +367,7 @@ const Checkout = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-black mb-2">
                       Full Name *
                     </label>
                     <div className="relative">
@@ -384,7 +384,7 @@ const Checkout = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-black mb-2">
                       Email *
                     </label>
                     <div className="relative">
@@ -401,11 +401,11 @@ const Checkout = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-black mb-2">
                       Phone Number *
                     </label>
                     <div className="relative">
-                      <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" />
                       <input
                         type="tel"
                         value={shippingAddress.phone}
@@ -418,7 +418,7 @@ const Checkout = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-black mb-2">
                       City *
                     </label>
                     <input
@@ -432,7 +432,7 @@ const Checkout = () => {
                   </div>
                   
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-black mb-2">
                       Complete Address *
                     </label>
                     <textarea
