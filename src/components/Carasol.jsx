@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
-import video from "../assets/images/video.mp4"; // <-- Apna path check kar lena
 
 const Carasol = ({ category }) => {
   let slides = [];
 
   if (category === "khadar") {
-    slides = [];
+    slides = [
+      "https://hub.wtm.com/wp-content/uploads/2018/08/Blogging.jpg",
+      "https://image/cc1.webp",
+      "https://cdn.shopify.com/s/files/1/0248/7892/t/52/assets/hamilton-watches-banner_1440x.jpg",
+      "https://i.pinimg.com/originals/4f/7f/83/4f7f83f20552d1055c2f7f4a3d84b6bf.jpg",
+    ];
   } else if (category === "valvet") {
     slides = [
       "https://hub.wtm.com/wp-content/uploads/2018/08/Blogging.jpg",
@@ -35,22 +39,6 @@ const Carasol = ({ category }) => {
     ]
   );
 
-  // Sirf khadar category ke liye video
-  if (category === "khadar") {
-    return (
-      <video
-        src={video}
-        autoPlay
-        muted
-        loop
-        playsInline
-        controls={false}
-        className="w-full h-[250px] md:h-[450px] object-cover rounded-xl"
-      />
-    );
-  }
-
-  // Baaki categories ke liye carousel
   return (
     <div className="embla overflow-hidden" ref={emblaRef}>
       <div className="embla__container flex">

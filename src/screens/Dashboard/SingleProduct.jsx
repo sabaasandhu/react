@@ -3,20 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import Rating from "../../components/Rating";
 import salePriceFunc from "../../helpers/Func.jsx";
-import apis from "../../config/apis";
 import { singleProduct } from "../../redux/actions/productActions";
-import { addToCart } from "../../redux/actions/cartActions";
+import { addToCart, fetchCart } from "../../redux/actions/cartActions";
 import MetaData from "../../components/MetaData";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { fetchCart } from "../../redux/actions/cartActions";
-import { 
-  FaWhatsapp, 
-  FaFacebook, 
-  FaInstagram, 
-  FaLink, 
+import {
+  FaWhatsapp,
+  FaFacebook,
+  FaInstagram,
+  FaLink,
   FaCheck,
-  FaRuler, 
+  FaRuler,
   FaTshirt,
   FaPalette,
   FaChartBar,
@@ -28,14 +26,20 @@ import {
   FaShareAlt,
   FaTruck,
   FaShieldAlt,
-  FaUndo
+  FaUndo,
 } from "react-icons/fa";
+
+// NOTE: ProductCard builds image URLs the same way — hardcoded here instead
+// of via config/apis.js. Ideally both files should import one shared
+// IMAGE_BASE_URL from apis.js so there's a single place to change it, but
+// matching ProductCard exactly for now so images resolve consistently.
+const IMAGE_BASE_URL = "https://django-production-126c.up.railway.app";
 
 const SingleProduct = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { product, loading } = useSelector((state) => state.prodSlice);
-  const user = useSelector((state) => state.auth.user);  
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
   const [quantity, setQuantity] = useState(1);
@@ -49,41 +53,47 @@ const SingleProduct = () => {
   const [showSizeChart, setShowSizeChart] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [isWishlist, setIsWishlist] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
   const imgRef = useRef(null);
   const shareMenuRef = useRef(null);
   const sizeChartRef = useRef(null);
 
-  // Product sizes with measurements
+  // Stitched garment sizes with measurements (inches)
   const sizeChartData = {
-    "Small": { bust: "34", waist: "28", hips: "36", length: "42" },
-    "Medium": { bust: "36", waist: "30", hips: "38", length: "43" },
-    "Large": { bust: "38", waist: "32", hips: "40", length: "44" },
-    "XL": { bust: "40", waist: "34", hips: "42", length: "45" },
-  
+    Small: { bust: "34", waist: "28", hips: "36", length: "42" },
+    Medium: { bust: "36", waist: "30", hips: "38", length: "43" },
+    Large: { bust: "38", waist: "32", hips: "40", length: "44" },
+    XL: { bust: "40", waist: "34", hips: "42", length: "45" },
   };
 
-  // Unstitch sizes with measurements
+  // Unstitched fabric length options
   const unstitchSizeChart = {
     "1 Meter": { length: "36", width: "44", fabric: "1 Meter" },
     "1.5 Meter": { length: "54", width: "44", fabric: "1.5 Meter" },
     "2 Meter": { length: "72", width: "44", fabric: "2 Meter" },
     "2.5 Meter": { length: "90", width: "44", fabric: "2.5 Meter" },
-    "3 Meter": { length: "108", width: "44", fabric: "3 Meter" }
+    "3 Meter": { length: "108", width: "44", fabric: "3 Meter" },
   };
 
-  // Available colors with hex codes
   const availableColors = [
     { name: "Black", hex: "#000000" },
     { name: "Blue", hex: "#0000FF" },
     { name: "Yellow", hex: "#FFD700" },
-   
   ];
 
   useEffect(() => {
     dispatch(singleProduct(id));
   }, [dispatch, id]);
 
-  // Click outside to close share menu and size chart
+  // Reset selections whenever the product changes so old size/color
+  // choices don't carry over between products
+  useEffect(() => {
+    setSelectedSize("");
+    setSelectedColor("");
+    setSelectedImage(0);
+    setQuantity(1);
+  }, [id]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (shareMenuRef.current && !shareMenuRef.current.contains(e.target)) {
@@ -107,13 +117,15 @@ const SingleProduct = () => {
     setCursorPosition({ x: e.pageX - left, y: e.pageY - top });
   };
 
-  // Share functions
   const shareOnWhatsApp = () => {
-    const productName = product ? product.name : '';
-    const productBrand = product ? product.brand : '';
+    const productName = product ? product.name : "";
+    const productBrand = product ? product.brand : "";
     const productPrice = product ? product.price : 0;
     const productDiscount = product && product.discount ? product.discount : 0;
-    const text = `Check out ${productBrand} ${productName} - Rs.${salePriceFunc(productPrice, productDiscount)}`;
+    const text = `Check out ${productBrand} ${productName} - Rs.${salePriceFunc(
+      productPrice,
+      productDiscount
+    )}`;
     const url = window.location.href;
     window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
     setShowShareMenu(false);
@@ -141,14 +153,7 @@ const SingleProduct = () => {
     setShowShareMenu(false);
   };
 
-  // 🟢🟢🟢 FIXED ADD TO CART FUNCTION - 100% WORKING 🟢🟢🟢
   const handleAddToCart = async () => {
-    console.log("🚀 Add to cart clicked!");
-    console.log("Selected Size:", selectedSize);
-    console.log("Selected Color:", selectedColor);
-    console.log("Quantity:", quantity);
-    
-    // Check 1: Login
     const token = localStorage.getItem("access");
     if (!token) {
       toast.error("Please login first!");
@@ -156,61 +161,54 @@ const SingleProduct = () => {
       return;
     }
 
-    // Check 2: Size
     if (!selectedSize) {
       toast.error("Please select a size!");
       return;
     }
 
-    // Check 3: Color
     if (!selectedColor) {
       toast.error("Please select a color!");
       return;
     }
 
-    // Check 4: Stock
     if (stock === 0) {
       toast.error("Out of stock!");
       return;
     }
 
-    // Check 5: Product
     if (!product || !product.id) {
       toast.error("Product not found!");
       return;
     }
 
     try {
-      toast.loading("Adding to cart...");
-      
-      // 🟢 REDUX ACTION
-      console.log("Dispatching addToCart:", product.id, quantity);
+      setAddingToCart(true);
+      // NOTE: addToCart (as used in ProductCard too) only takes (id, qty) —
+      // it has no size/color parameter today, so the selection made on this
+      // page isn't actually stored against the cart line item yet. If you
+      // want size/color tracked in the cart, addToCart's action + reducer +
+      // backend serializer all need to accept and persist them first.
       await dispatch(addToCart(product.id, quantity));
-      
-      console.log("Dispatching fetchCart...");
       await dispatch(fetchCart());
-      
-      toast.dismiss();
-      toast.success(`✅ Added to cart! ${selectedSize}, ${selectedColor}`);
+      toast.success(`Added to cart: ${selectedSize}, ${selectedColor}`);
       setShowSizeChart(false);
-      
     } catch (error) {
-      toast.dismiss();
       toast.error("Failed to add to cart!");
-      console.error("Error:", error);
+    } finally {
+      setAddingToCart(false);
     }
   };
 
   const toggleWishlist = () => {
     setIsWishlist(!isWishlist);
-    toast.success(isWishlist ? "Removed from wishlist" : "Added to wishlist ❤️");
+    toast.success(isWishlist ? "Removed from wishlist" : "Added to wishlist");
   };
 
   if (loading || !product) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
         <div className="animate-pulse flex flex-col items-center">
-          <div className="w-24 h-24 bg-gradient-to-r from-teal-400 to-purple-500 rounded-full mb-6 shadow-lg animate-spin"></div>
+          <div className="w-20 h-20 border-4 border-orange-200 border-t-orange-600 rounded-full mb-6 animate-spin"></div>
           <p className="text-gray-600 font-medium">Loading product...</p>
         </div>
       </div>
@@ -228,7 +226,7 @@ const SingleProduct = () => {
     onSale,
     images,
     description,
-    gender = "unisex"
+    gender = "unisex",
   } = product;
 
   function inc() {
@@ -242,35 +240,45 @@ const SingleProduct = () => {
   const isUnstitch = category ? category.toLowerCase().includes("unstitch") : false;
   const sizes = isUnstitch ? Object.keys(unstitchSizeChart) : Object.keys(sizeChartData);
   const GenderIcon = gender === "women" ? FaFemale : gender === "men" ? FaMale : null;
+  const readyToAdd = stock > 0 && selectedSize && selectedColor;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm mb-6 bg-white/80 backdrop-blur-sm p-3 rounded-xl shadow-sm">
-          <Link to="/" className="text-gray-600 hover:text-teal-600 transition-colors">Home</Link>
+        <nav className="flex items-center gap-2 text-sm mb-6 bg-white p-3 rounded-xl shadow-sm">
+          <Link to="/" className="text-gray-600 hover:text-orange-600 transition-colors">
+            Home
+          </Link>
           <span className="text-gray-400">/</span>
-          <Link to={`/category/${category}`} className="text-gray-600 hover:text-teal-600 transition-colors">{category}</Link>
+          <Link
+            to={`/category/${category ? category.toLowerCase() : ""}`}
+            className="text-gray-600 hover:text-orange-600 transition-colors capitalize"
+          >
+            {category}
+          </Link>
           <span className="text-gray-400">/</span>
-          <span className="text-gray-800 font-semibold">{brand} {name}</span>
+          <span className="text-gray-800 font-semibold">
+            {brand} {name}
+          </span>
         </nav>
 
-        <MetaData title={product ? product.brand + " " + product.name : ""} />
-        
+        <MetaData title={product ? `${product.brand} ${product.name}` : ""} />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Left: Product Images */}
           <div className="space-y-4">
             <div
-              className="relative aspect-square bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-white/50"
+              className="relative aspect-square bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
             >
               <img
                 ref={imgRef}
-                src={images && images[selectedImage] ? `${apis[2]}${images[selectedImage].image}` : ""}
+                src={images && images[selectedImage] ? `${IMAGE_BASE_URL}${images[selectedImage].image}` : "/placeholder.jpg"}
                 alt={name}
-                className="w-full h-full object-contain p-8 transition-transform duration-700 group-hover:scale-110"
+                className="w-full h-full object-contain p-8"
               />
 
               {showMagnifier && images && images[selectedImage] && (
@@ -279,22 +287,24 @@ const SingleProduct = () => {
                   style={{
                     left: `${cursorPosition.x - 112}px`,
                     top: `${cursorPosition.y - 112}px`,
-                    backgroundImage: `url('${apis[2]}${images[selectedImage].image}')`,
+                    backgroundImage: `url('${IMAGE_BASE_URL}${images[selectedImage].image}')`,
                     backgroundPosition: `${magnifierPosition.x}% ${magnifierPosition.y}%`,
-                    backgroundSize: `${imgRef.current ? imgRef.current.offsetWidth * 2.5 : 0}px ${imgRef.current ? imgRef.current.offsetHeight * 2.5 : 0}px`,
+                    backgroundSize: `${imgRef.current ? imgRef.current.offsetWidth * 2.5 : 0}px ${
+                      imgRef.current ? imgRef.current.offsetHeight * 2.5 : 0
+                    }px`,
                     zIndex: 50,
                   }}
                 />
               )}
 
               {onSale && (
-                <span className="absolute top-6 left-6 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                <span className="absolute top-6 left-6 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                   Sale {discount}% OFF
                 </span>
               )}
 
               {gender && gender !== "unisex" && (
-                <span className="absolute top-6 right-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                <span className="absolute top-6 right-6 bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
                   <GenderIcon className="w-4 h-4" />
                   {gender === "women" ? "Women" : "Men"}
                 </span>
@@ -303,49 +313,50 @@ const SingleProduct = () => {
               <button
                 onClick={toggleWishlist}
                 className="absolute bottom-6 right-6 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
+                aria-label="Toggle wishlist"
               >
-                <FaHeart className={`w-6 h-6 ${isWishlist ? 'text-red-500' : 'text-gray-400'}`} />
+                <FaHeart className={`w-6 h-6 ${isWishlist ? "text-red-500" : "text-gray-400"}`} />
               </button>
             </div>
 
             {/* Thumbnails */}
-            <div className="flex gap-3 overflow-x-auto pb-4">
-              {images && images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedImage(i)}
-                  className={`flex-shrink-0 w-24 h-24 rounded-xl border-3 transition-all duration-300 overflow-hidden ${
-                    selectedImage === i
-                      ? "border-teal-600 shadow-xl scale-105 ring-4 ring-teal-100"
-                      : "border-gray-200 hover:border-teal-400"
-                  }`}
-                >
-                  <img
-                    src={`${apis[2]}${img.image}`}
-                    alt={`${name} thumbnail`}
-                    className="w-full h-full object-contain p-2 bg-white"
-                  />
-                </button>
-              ))}
-            </div>
+            {images && images.length > 1 && (
+              <div className="flex gap-3 overflow-x-auto pb-2">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImage(i)}
+                    className={`flex-shrink-0 w-24 h-24 rounded-xl border-2 transition-all overflow-hidden ${
+                      selectedImage === i
+                        ? "border-orange-600 shadow-md ring-2 ring-orange-100"
+                        : "border-gray-200 hover:border-orange-400"
+                    }`}
+                  >
+                    <img
+                      src={`${IMAGE_BASE_URL}${img.image}`}
+                      alt={`${name} thumbnail ${i + 1}`}
+                      className="w-full h-full object-contain p-2 bg-white"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right: Product Details */}
-          <div className="flex flex-col gap-2 h-25">
+          <div className="flex flex-col gap-4">
             {/* Brand & Category */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-2 shadow-lg">
-              <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider bg-teal-50 px-3 py-1 rounded-full">
+            <div className="bg-white rounded-3xl p-6 shadow-sm">
+              <span className="text-sm font-semibold text-orange-600 uppercase tracking-wider bg-orange-50 px-3 py-1 rounded-full">
                 {brand}
               </span>
-              <h1 className="text-3xl lg:text-2xl font-bold text-gray-800 mt-2 underline underline-offset-4 decoration-teal-600">
-                {name}
-              </h1>
-              <div className="flex flex-wrap items-center gap-2 mt-2">
-                <span className="text-purple-700 text-sm bg-purple-50 px-4 py-1.5 rounded-full font-medium">
+              <h1 className="text-3xl font-bold text-gray-800 mt-3">{name}</h1>
+              <div className="flex flex-wrap items-center gap-2 mt-3">
+                <span className="text-gray-700 text-sm bg-gray-100 px-4 py-1.5 rounded-full font-medium capitalize">
                   {category}
                 </span>
                 {isUnstitch && (
-                  <span className="text-blue-700 text-sm bg-blue-50 px-4 py-1.5 rounded-full font-medium flex items-center gap-2">
+                  <span className="text-orange-700 text-sm bg-orange-50 px-4 py-1.5 rounded-full font-medium flex items-center gap-2">
                     <FaRuler /> Unstitched
                   </span>
                 )}
@@ -353,19 +364,15 @@ const SingleProduct = () => {
             </div>
 
             {/* Price & Rating */}
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl p-6 shadow-lg h-22">
-              <div className="flex flex-wrap items-center justify-between">
+            <div className="bg-white rounded-3xl p-6 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <span className="text-sm text-gray-600 font-medium">Price</span>
                   <div className="flex items-baseline gap-3">
                     <span className="text-2xl text-red-600 font-semibold">
                       Rs.{salePriceFunc(price, discount || 0)}
                     </span>
-                    {onSale && (
-                      <span className="text-gray-400 line-through text-xl">
-                        Rs.{price}
-                      </span>
-                    )}
+                    {onSale && <span className="text-gray-400 line-through text-lg">Rs.{price}</span>}
                   </div>
                   {discount > 0 && (
                     <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold mt-2">
@@ -373,7 +380,7 @@ const SingleProduct = () => {
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm">
+                <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-full">
                   <Rating rating={rating} />
                   <span className="text-gray-600 text-sm font-semibold">({rating})</span>
                 </div>
@@ -381,12 +388,14 @@ const SingleProduct = () => {
             </div>
 
             {/* Stock Status */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-md h-20">
-              <div className="flex items-center gap-4 h-12">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <div className="flex items-center gap-3">
                 {stock > 0 ? (
                   <>
-                    <span className="w-4 h-4 bg-green-500 rounded-full animate-ping absolute"></span>
-                    <span className="w-4 h-4 bg-green-500 rounded-full relative"></span>
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
                     <div>
                       <p className="text-green-700 font-semibold">In Stock</p>
                       <p className="text-sm text-gray-600">{stock} items available</p>
@@ -394,7 +403,7 @@ const SingleProduct = () => {
                   </>
                 ) : (
                   <>
-                    <span className="w-4 h-4 bg-red-500 rounded-full"></span>
+                    <span className="w-3 h-3 bg-red-500 rounded-full"></span>
                     <p className="text-red-600 font-medium">Out of stock</p>
                   </>
                 )}
@@ -402,27 +411,25 @@ const SingleProduct = () => {
             </div>
 
             {/* Description */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-lg">
-              <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-3 text-lg">
-                <span className="w-8 h-8 bg-gradient-to-r from-teal-500 to-purple-500 rounded-full flex items-center justify-center">
+            <div className="bg-white rounded-3xl p-6 shadow-sm">
+              <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-3 text-lg">
+                <span className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
                   <FaTshirt className="w-4 h-4 text-white" />
                 </span>
                 Product Description
               </h3>
-              <p className="text-gray-700 leading-relaxed">
-                {description || "No description available."}
-              </p>
+              <p className="text-gray-700 leading-relaxed">{description || "No description available."}</p>
             </div>
 
             {/* Color Selection */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-lg h-22">
+            <div className="bg-white rounded-3xl p-6 shadow-sm">
               <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-3 text-lg">
-                <span className="w-8 h-8 bg-gradient-to-r from-pink-500 to-orange-500 rounded-full flex items-center justify-center">
+                <span className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
                   <FaPalette className="w-4 h-4 text-white" />
                 </span>
                 Select Color
               </h3>
-              <div className="flex flex-wrap  gap-4">
+              <div className="flex flex-wrap gap-5">
                 {availableColors.map((color) => (
                   <button
                     key={color.name}
@@ -431,87 +438,79 @@ const SingleProduct = () => {
                     title={color.name}
                   >
                     <div
-                      className={`w-8 h-8 rounded-xl transition-all duration-300 shadow-md ${
-                        selectedColor === color.name 
-                          ? "ring-4 ring-teal-600 ring-offset-4 scale-110" 
+                      className={`w-9 h-9 rounded-xl transition-all shadow-sm ${
+                        selectedColor === color.name
+                          ? "ring-4 ring-orange-600 ring-offset-2 scale-110"
                           : "hover:scale-110"
                       }`}
-                      style={{ 
+                      style={{
                         backgroundColor: color.hex,
-                        border: color.hex === "#FFFFFF" ? "2px solid #e5e7eb" : "none"
+                        border: color.hex === "#FFFFFF" ? "2px solid #e5e7eb" : "none",
                       }}
                     />
                     {selectedColor === color.name && (
-                      <span className="absolute -top-2 -right-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full p-1.5 shadow-lg">
-                        <FaCheck className="w-3 h-3" />
+                      <span className="absolute -top-2 -right-2 bg-orange-600 text-white rounded-full p-1 shadow">
+                        <FaCheck className="w-2.5 h-2.5" />
                       </span>
                     )}
-                    <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap z-20">
+                    <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
                       {color.name}
                     </span>
                   </button>
                 ))}
               </div>
-              {!selectedColor && (
-                <p className="text-red-500 text-sm mt-4">Please select a color</p>
-              )}
+              {!selectedColor && <p className="text-red-500 text-sm mt-4">Please select a color</p>}
             </div>
 
             {/* Size Selection */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-lg h-25">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2 text-semibold">
-                  <span className="w-4 h-4 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-                    <FaRuler className="w-2 h-2 text-white" />
+            <div className="bg-white rounded-3xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+                    <FaRuler className="w-3.5 h-3.5 text-white" />
                   </span>
                   Select Size
                 </h3>
                 <button
                   onClick={() => setShowSizeChart(!showSizeChart)}
-                  className="px-4 py-2 bg-gradient-to-r from-teal-50 to-teal-100 text-teal-700 rounded-xl hover:from-teal-100 hover:to-teal-200 transition-all font-medium flex items-center gap-2"
+                  className="px-4 py-2 bg-orange-50 text-orange-700 rounded-xl hover:bg-orange-100 transition-colors font-medium flex items-center gap-2 text-sm"
                 >
                   <FaChartBar /> Size Chart
                 </button>
               </div>
 
-              <div className="flex flex-wrap gap-3 h-8">
+              <div className="flex flex-wrap gap-3">
                 {sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`
-                      px-5 py-2.5 rounded-xl border-2 transition-all duration-300 font-semibold min-w-[80px]
-                      ${selectedSize === size 
-                        ? "bg-gradient-to-r from-teal-600 to-teal-700 text-white border-teal-600 shadow-xl scale-105" 
-                        : "bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50"
-                      }
-                    `}
+                    className={`px-5 py-2.5 rounded-xl border-2 transition-all font-semibold min-w-[80px] ${
+                      selectedSize === size
+                        ? "bg-orange-600 text-white border-orange-600 shadow-md scale-105"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-orange-400 hover:bg-orange-50"
+                    }`}
                   >
                     {size}
                   </button>
                 ))}
               </div>
 
-              {!selectedSize && (
-                <p className="text-red-500 text-sm mt-4">Please select a size</p>
-              )}
+              {!selectedSize && <p className="text-red-500 text-sm mt-4">Please select a size</p>}
             </div>
 
             {/* SIZE CHART MODAL */}
             {showSizeChart && (
-              <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[99999] p-4">
-                <div 
-                  ref={sizeChartRef}
-                  className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-                >
-                  <div className="sticky top-0 bg-gradient-to-r from-teal-600 to-purple-600 p-6 flex justify-between items-center">
+              <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9999] p-4">
+                <div ref={sizeChartRef} className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                  <div className="sticky top-0 bg-orange-600 p-6 flex justify-between items-center">
                     <h3 className="text-2xl font-bold text-white flex items-center gap-3">
                       <FaRuler className="w-6 h-6" />
                       {isUnstitch ? "Fabric Length Guide" : "Size Guide"}
                     </h3>
                     <button
                       onClick={() => setShowSizeChart(false)}
-                      className="p-2 hover:bg-white/20 rounded-full transition-all text-white"
+                      className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+                      aria-label="Close size chart"
                     >
                       <FaTimes className="w-6 h-6" />
                     </button>
@@ -521,7 +520,7 @@ const SingleProduct = () => {
                     {isUnstitch ? (
                       <table className="w-full border-collapse">
                         <thead>
-                          <tr className="bg-gradient-to-r from-teal-50 to-purple-50">
+                          <tr className="bg-orange-50">
                             <th className="border p-4 text-left">Size</th>
                             <th className="border p-4 text-left">Length</th>
                             <th className="border p-4 text-left">Width</th>
@@ -530,10 +529,10 @@ const SingleProduct = () => {
                         </thead>
                         <tbody>
                           {Object.entries(unstitchSizeChart).map(([size, data]) => (
-                            <tr 
-                              key={size} 
-                              className={`hover:bg-gradient-to-r hover:from-teal-50 hover:to-purple-50 cursor-pointer ${
-                                selectedSize === size ? "bg-gradient-to-r from-teal-100 to-purple-100" : ""
+                            <tr
+                              key={size}
+                              className={`hover:bg-orange-50 cursor-pointer ${
+                                selectedSize === size ? "bg-orange-100" : ""
                               }`}
                               onClick={() => {
                                 setSelectedSize(size);
@@ -549,63 +548,58 @@ const SingleProduct = () => {
                         </tbody>
                       </table>
                     ) : (
-                      <>
-                        <table className="w-full border-collapse mb-6">
-                          <thead>
-                            <tr className="bg-gradient-to-r from-teal-50 to-purple-50">
-                              <th className="border p-4 text-left">Size</th>
-                              <th className="border p-4 text-left">Bust</th>
-                              <th className="border p-4 text-left">Waist</th>
-                              <th className="border p-4 text-left">Hips</th>
-                              <th className="border p-4 text-left">Length</th>
+                      <table className="w-full border-collapse mb-6">
+                        <thead>
+                          <tr className="bg-orange-50">
+                            <th className="border p-4 text-left">Size</th>
+                            <th className="border p-4 text-left">Bust</th>
+                            <th className="border p-4 text-left">Waist</th>
+                            <th className="border p-4 text-left">Hips</th>
+                            <th className="border p-4 text-left">Length</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.entries(sizeChartData).map(([size, data]) => (
+                            <tr
+                              key={size}
+                              className={`hover:bg-orange-50 cursor-pointer ${
+                                selectedSize === size ? "bg-orange-100" : ""
+                              }`}
+                              onClick={() => {
+                                setSelectedSize(size);
+                                toast.success(`Size ${size} selected`);
+                              }}
+                            >
+                              <td className="border p-4 font-semibold">{size}</td>
+                              <td className="border p-4">{data.bust}"</td>
+                              <td className="border p-4">{data.waist}"</td>
+                              <td className="border p-4">{data.hips}"</td>
+                              <td className="border p-4">{data.length}"</td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {Object.entries(sizeChartData).map(([size, data]) => (
-                              <tr 
-                                key={size} 
-                                className={`hover:bg-gradient-to-r hover:from-teal-50 hover:to-purple-50 cursor-pointer ${
-                                  selectedSize === size ? "bg-gradient-to-r from-teal-100 to-purple-100" : ""
-                                }`}
-                                onClick={() => {
-                                  setSelectedSize(size);
-                                  toast.success(`Size ${size} selected`);
-                                }}
-                              >
-                                <td className="border p-4 font-semibold">{size}</td>
-                                <td className="border p-4">{data.bust}"</td>
-                                <td className="border p-4">{data.waist}"</td>
-                                <td className="border p-4">{data.hips}"</td>
-                                <td className="border p-4">{data.length}"</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </>
+                          ))}
+                        </tbody>
+                      </table>
                     )}
 
-                    {/* ADD TO CART INSIDE SIZE CHART */}
                     <div className="sticky bottom-0 bg-white pt-6 mt-4 border-t">
                       <button
                         onClick={handleAddToCart}
-                        disabled={stock === 0} // 🟢 SIRF STOCK OUT HO TO DISABLE
-                        className={`
-                          w-full px-8 py-4 rounded-2xl font-bold text-lg 
-                          flex items-center justify-center gap-3
-                          transition-all duration-300
-                          ${stock === 0
+                        disabled={stock === 0 || addingToCart}
+                        className={`w-full px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all ${
+                          stock === 0
                             ? "bg-gray-300 cursor-not-allowed opacity-60"
-                            : "bg-gradient-to-r from-teal-600 to-purple-600 text-white hover:from-teal-700 hover:to-purple-700 hover:scale-105 hover:shadow-2xl"
-                          }
-                        `}
+                            : "bg-orange-600 text-white hover:bg-orange-700 hover:shadow-lg"
+                        }`}
                       >
                         <FaShoppingCart className="w-6 h-6" />
-                        {stock === 0 
-                          ? "Out of Stock" 
+                        {stock === 0
+                          ? "Out of Stock"
                           : !selectedSize
-                          ? "Select Size First" 
+                          ? "Select Size First"
                           : !selectedColor
                           ? "Select Color First"
+                          : addingToCart
+                          ? "Adding..."
                           : "Add to Cart"}
                       </button>
                     </div>
@@ -614,26 +608,26 @@ const SingleProduct = () => {
               </div>
             )}
 
-            {/* 🟢🟢🟢 MAIN ADD TO CART - 100% WORKING 🟢🟢🟢 */}
-            <div className="bg-gradient-to-r from-gray-50 via-white to-gray-50 rounded-3xl p-6 shadow-xl border-2 border-teal-200">
-              <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+            {/* MAIN ADD TO CART */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-orange-100">
+              <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
                 {/* Quantity Counter */}
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-800 font-semibold text-semibold">Qty:</span>
-                  <div className="flex items-center bg-white rounded-xl border-2 border-teal-300 overflow-hidden shadow-md">
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-800 font-semibold">Qty:</span>
+                  <div className="flex items-center bg-white rounded-xl border-2 border-orange-200 overflow-hidden">
                     <button
                       onClick={dec}
-                      className="px-2 py-3 text-2xl font-semibold bg-gradient-to-r from-gray-100 to-gray-200 hover:from-teal-500 hover:to-teal-600 hover:text-white transition-all"
+                      className="px-4 py-2 text-xl font-semibold text-gray-600 hover:bg-orange-600 hover:text-white transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-gray-600"
                       disabled={quantity <= 1}
                     >
                       −
                     </button>
-                    <div className="px-4 py-3  font-semibold bg-white border-x-2 border-teal-200 min-w-[80px] text-center">
+                    <div className="px-5 py-2 font-semibold bg-white border-x-2 border-orange-100 min-w-[60px] text-center">
                       {quantity}
                     </div>
                     <button
                       onClick={inc}
-                      className="px-3 py-2 text-2xl font-semibold bg-gradient-to-r from-gray-100 to-gray-200 hover:from-teal-500 hover:to-teal-600 hover:text-white transition-all"
+                      className="px-4 py-2 text-xl font-semibold text-gray-600 hover:bg-orange-600 hover:text-white transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-gray-600"
                       disabled={quantity >= stock}
                     >
                       +
@@ -641,35 +635,28 @@ const SingleProduct = () => {
                   </div>
                 </div>
 
-                {/* 🚀🚀🚀 ADD TO CART BUTTON - ALWAYS ENABLED 🚀🚀🚀 */}
                 <button
                   onClick={handleAddToCart}
-                  disabled={stock === 0} // 🟢 SIRF STOCK OUT HO TO DISABLE
-                  className={`
-                    flex-1 px-5 py-4 rounded-xl font-semibold 
-                    flex items-center justify-center gap-4
-                    transition-all duration-300 transform
-                    ${stock === 0
-                      ? "bg-gray-300 cursor-not-allowed opacity-50"
-                      : "bg-gradient-to-r from-teal-600 to-purple-700 text-white hover:from-teal-700 hover:to-purple-800 hover:scale-105 hover:shadow-2xl"
-                    }
-                  `}
-                  style={{
-                    position: 'relative',
-                    zIndex: 9999,
-                    pointerEvents: 'auto'
-                  }}
+                  disabled={!readyToAdd || addingToCart}
+                  className={`flex-1 px-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition-all ${
+                    !readyToAdd
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-orange-600 text-white hover:bg-orange-700 hover:shadow-lg"
+                  }`}
                 >
                   <FaShoppingCart className="w-4 h-4" />
-                  Add to Cart • Rs.{salePriceFunc(price, discount || 0)}
+                  {stock === 0
+                    ? "Out of Stock"
+                    : addingToCart
+                    ? "Adding..."
+                    : `Add to Cart • Rs.${salePriceFunc(price, discount || 0)}`}
                 </button>
               </div>
-              
-              {/* Size/Color warnings - but button enabled! */}
-              {(!selectedSize || !selectedColor) && (
+
+              {stock > 0 && (!selectedSize || !selectedColor) && (
                 <div className="mt-3 p-2 bg-yellow-50 border border-yellow-300 rounded-lg text-center">
                   <p className="text-yellow-700 text-sm font-medium">
-                    ⚠️ Please select {!selectedSize && !selectedColor ? 'size and color' : !selectedSize ? 'size' : 'color'}
+                    Please select {!selectedSize && !selectedColor ? "size and color" : !selectedSize ? "size" : "color"}
                   </p>
                 </div>
               )}
@@ -677,21 +664,19 @@ const SingleProduct = () => {
 
             {/* Selected Options Summary */}
             {(selectedSize || selectedColor) && (
-              <div className="mt-2 p-4 bg-gradient-to-r from-teal-50 to-purple-50 border-2 border-teal-300 rounded-2xl">
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-2xl">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-sm font-bold text-teal-800">✅ Selected:</span>
+                  <span className="text-sm font-bold text-orange-800">Selected:</span>
                   {selectedSize && (
-                    <span className="px-4 py-2 bg-white border-2 border-teal-400 rounded-full text-sm font-bold text-teal-700">
+                    <span className="px-4 py-2 bg-white border border-orange-300 rounded-full text-sm font-bold text-orange-700">
                       Size: {selectedSize}
                     </span>
                   )}
                   {selectedColor && (
-                    <span className="px-4 py-2 bg-white border-2 border-purple-400 rounded-full text-sm font-bold text-purple-700 flex items-center gap-2">
-                      <span 
-                        className="w-4 h-4 rounded-full" 
-                        style={{ 
-                          backgroundColor: availableColors.find(c => c.name === selectedColor)?.hex || '#000' 
-                        }}
+                    <span className="px-4 py-2 bg-white border border-orange-300 rounded-full text-sm font-bold text-orange-700 flex items-center gap-2">
+                      <span
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: availableColors.find((c) => c.name === selectedColor)?.hex || "#000" }}
                       />
                       Color: {selectedColor}
                     </span>
@@ -701,36 +686,36 @@ const SingleProduct = () => {
             )}
 
             {/* Shipping Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-md flex items-center gap-3">
-                <FaTruck className="w-6 h-6 text-teal-600" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
+                <FaTruck className="w-6 h-6 text-orange-600 flex-shrink-0" />
                 <div>
-                  <h4 className="font-bold text-gray-800">Free Shipping</h4>
+                  <h4 className="font-bold text-gray-800 text-sm">Free Shipping</h4>
                   <p className="text-xs text-gray-600">On orders above Rs.2000</p>
                 </div>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-md flex items-center gap-3">
-                <FaShieldAlt className="w-6 h-6 text-purple-600" />
+              <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
+                <FaShieldAlt className="w-6 h-6 text-orange-600 flex-shrink-0" />
                 <div>
-                  <h4 className="font-bold text-gray-800">Secure Payment</h4>
+                  <h4 className="font-bold text-gray-800 text-sm">Secure Payment</h4>
                   <p className="text-xs text-gray-600">100% secure</p>
                 </div>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-md flex items-center gap-3">
-                <FaUndo className="w-6 h-6 text-blue-600" />
+              <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
+                <FaUndo className="w-6 h-6 text-orange-600 flex-shrink-0" />
                 <div>
-                  <h4 className="font-bold text-gray-800">Easy Returns</h4>
+                  <h4 className="font-bold text-gray-800 text-sm">Easy Returns</h4>
                   <p className="text-xs text-gray-600">7 days return</p>
                 </div>
               </div>
             </div>
 
             {/* Share Button */}
-            <div className="flex items-center gap-4 pt-4">
+            <div className="flex items-center gap-4 pt-2">
               <div className="relative" ref={shareMenuRef}>
                 <button
                   onClick={() => setShowShareMenu(!showShareMenu)}
-                  className="px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-2xl hover:from-orange-600 hover:to-pink-600 transition-all flex items-center gap-3 font-semibold shadow-lg"
+                  className="px-6 py-3 bg-gray-800 text-white rounded-2xl hover:bg-gray-900 transition-colors flex items-center gap-3 font-semibold shadow-sm"
                 >
                   <FaShareAlt /> Share
                 </button>
@@ -756,7 +741,7 @@ const SingleProduct = () => {
 
               <Link
                 to="/"
-                className="px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-2xl hover:from-teal-600 hover:to-teal-700 transition-all font-semibold flex items-center gap-3 shadow-lg"
+                className="px-6 py-3 bg-orange-600 text-white rounded-2xl hover:bg-orange-700 transition-colors font-semibold flex items-center gap-3 shadow-sm"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
