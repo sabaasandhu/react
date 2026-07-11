@@ -262,68 +262,15 @@ const SingleProduct = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Left: Product Images */}
-          <div className="space-y-4">
-            <div
-              className="relative aspect-square bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100 flex items-center justify-center"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              onMouseMove={handleMouseMove}
-            >
-              <img
-                ref={imgRef}
-                src={getImageUrl(images?.[selectedImage])}
-                alt={name}
-                className="w-full h-full object-contain p-4 sm:p-8"
-              />
-
-              {showMagnifier && images?.[selectedImage] && (
-                <div
-                  className="hidden sm:block absolute pointer-events-none rounded-full border-2 border-white shadow-xl overflow-hidden"
-                  style={{
-                    width: `${MAGNIFIER_SIZE}px`,
-                    height: `${MAGNIFIER_SIZE}px`,
-                    left: `${cursorPosition.x - MAGNIFIER_SIZE / 2}px`,
-                    top: `${cursorPosition.y - MAGNIFIER_SIZE / 2}px`,
-                    backgroundImage: `url('${getImageUrl(images[selectedImage])}')`,
-                    backgroundPosition: `${magnifierPosition.x}% ${magnifierPosition.y}%`,
-                    backgroundSize: `${imgRef.current ? imgRef.current.offsetWidth * 2 : 0}px ${
-                      imgRef.current ? imgRef.current.offsetHeight * 2 : 0
-                    }px`,
-                    zIndex: 50,
-                  }}
-                />
-              )}
-
-              {onSale && (
-                <span className="absolute top-6 left-6 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                  Sale {discount}% OFF
-                </span>
-              )}
-
-              {gender && gender !== "unisex" && (
-                <span className="absolute top-6 right-6 bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
-                  <GenderIcon className="w-4 h-4" />
-                  {gender === "women" ? "Women" : "Men"}
-                </span>
-              )}
-
-              <button
-                onClick={toggleWishlist}
-                className="absolute bottom-6 right-6 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
-                aria-label="Toggle wishlist"
-              >
-                <FaHeart className={`w-6 h-6 ${isWishlist ? "text-red-500" : "text-gray-400"}`} />
-              </button>
-            </div>
-
-            {/* Thumbnails */}
+          <div className="flex gap-4">
+            {/* Thumbnails — vertical strip beside the image on larger screens */}
             {images && images.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="hidden sm:flex flex-col gap-3 w-20 flex-shrink-0">
                 {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
-                    className={`flex-shrink-0 w-24 h-24 rounded-xl border-2 transition-all overflow-hidden ${
+                    className={`w-20 h-20 rounded-xl border-2 transition-all overflow-hidden bg-white ${
                       selectedImage === i
                         ? "border-orange-600 shadow-md ring-2 ring-orange-100"
                         : "border-gray-200 hover:border-orange-400"
@@ -332,12 +279,92 @@ const SingleProduct = () => {
                     <img
                       src={getImageUrl(img)}
                       alt={`${name} thumbnail ${i + 1}`}
-                      className="w-full h-full object-contain p-2 bg-white"
+                      className="w-full h-full object-contain p-1.5"
                     />
                   </button>
                 ))}
               </div>
             )}
+
+            <div className="flex-1 space-y-3">
+              <div
+                className="relative aspect-square bg-gradient-to-br from-orange-50/60 to-white rounded-2xl shadow-md overflow-hidden border border-orange-100 flex items-center justify-center"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                onMouseMove={handleMouseMove}
+              >
+                <img
+                  ref={imgRef}
+                  src={getImageUrl(images?.[selectedImage])}
+                  alt={name}
+                  className="w-full h-full object-contain p-2 sm:p-4"
+                />
+
+                {showMagnifier && images?.[selectedImage] && (
+                  <div
+                    className="hidden sm:block absolute pointer-events-none rounded-full overflow-hidden transition-[left,top] duration-75 ease-out"
+                    style={{
+                      width: `${MAGNIFIER_SIZE}px`,
+                      height: `${MAGNIFIER_SIZE}px`,
+                      left: `${cursorPosition.x - MAGNIFIER_SIZE / 2}px`,
+                      top: `${cursorPosition.y - MAGNIFIER_SIZE / 2}px`,
+                      backgroundImage: `url('${getImageUrl(images[selectedImage])}')`,
+                      backgroundPosition: `${magnifierPosition.x}% ${magnifierPosition.y}%`,
+                      backgroundSize: `${imgRef.current ? imgRef.current.offsetWidth * 2 : 0}px ${
+                        imgRef.current ? imgRef.current.offsetHeight * 2 : 0
+                      }px`,
+                      border: "3px solid white",
+                      boxShadow: "0 0 0 2px #ea580c, 0 10px 25px -5px rgba(0,0,0,0.3)",
+                      zIndex: 50,
+                    }}
+                  />
+                )}
+
+                {onSale && (
+                  <span className="absolute top-4 left-4 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    Sale {discount}% OFF
+                  </span>
+                )}
+
+                {gender && gender !== "unisex" && (
+                  <span className="absolute top-4 right-4 bg-orange-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                    <GenderIcon className="w-4 h-4" />
+                    {gender === "women" ? "Women" : "Men"}
+                  </span>
+                )}
+
+                <button
+                  onClick={toggleWishlist}
+                  className="absolute bottom-4 right-4 w-11 h-11 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
+                  aria-label="Toggle wishlist"
+                >
+                  <FaHeart className={`w-5 h-5 ${isWishlist ? "text-red-500" : "text-gray-400"}`} />
+                </button>
+              </div>
+
+              {/* Thumbnails — horizontal row on mobile only */}
+              {images && images.length > 1 && (
+                <div className="flex sm:hidden gap-3 overflow-x-auto pb-1">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImage(i)}
+                      className={`flex-shrink-0 w-20 h-20 rounded-xl border-2 transition-all overflow-hidden bg-white ${
+                        selectedImage === i
+                          ? "border-orange-600 shadow-md ring-2 ring-orange-100"
+                          : "border-gray-200 hover:border-orange-400"
+                      }`}
+                    >
+                      <img
+                        src={getImageUrl(img)}
+                        alt={`${name} thumbnail ${i + 1}`}
+                        className="w-full h-full object-contain p-1.5"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right: Product Details */}
