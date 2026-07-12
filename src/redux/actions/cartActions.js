@@ -203,7 +203,7 @@ export const empptyCart = () => async (dispatch, getState) => {
 
     // ❌ DELETE کی بجائے POST use karein
     await axios.post( // ✅ POST use karein
-      "http://localhost:8000/api/cart/clear/",
+      "https://django-production-126c.up.railway.app/api/cart/clear/",
       {},
       {
         headers: {
