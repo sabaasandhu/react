@@ -3,7 +3,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
 import w from "../image/w.jpg";
 import r from "../image/r.png";
-import video from "../image/video.mp4";
+import v from "../image/v.png";
 
 const Carasol = ({ category }) => {
   let slides = [];
@@ -24,7 +24,7 @@ const Carasol = ({ category }) => {
     ];
   } else {
     slides = [
-       video,
+       v,
        r,
        w,
       
