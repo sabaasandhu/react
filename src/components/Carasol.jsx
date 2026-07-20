@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
+import w from "../image/w.jpg";
+import r from "../image/r.png";
 
 const Carasol = ({ category }) => {
   let slides = [];
@@ -21,9 +23,9 @@ const Carasol = ({ category }) => {
     ];
   } else {
     slides = [
-      "https://styka.pk/cdn/shop/files/Styka-01.webp?v=1764914779&width=1370",
-      "https://styka.pk/cdn/shop/files/Styka-03.webp?v=1764914779&width=1370",
-      "https://www.mariab.pk/cdn/shop/files/Luxury_Pret_Web_Banner_02.jpg?v=1763444782",
+      "python+react/client/src/image/w.jpg",
+      "python+react/client/src/image/r.png",
+      // "https://www.mariab.pk/cdn/shop/files/Luxury_Pret_Web_Banner_02.jpg?v=1763444782",
     ];
   }
 
