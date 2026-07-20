@@ -21,10 +21,11 @@ import salePriceFunc from '../helpers/Func';
 
 const Navigation = () => {
   const categories = [
-    { name : 'two piece', url: '/product/to-piece' },
+    { name : 'two piece', url: '/product/to-piece'},
+     { name : 'three piece', url: '/product/three-piece'},
     { name : 'Cotton', url: '/product/cotton'  },
     // { name : 'Crepe', url: '/product/crepe' },
-    { name : 'three piece', url: '/product/three-piece'  },
+   
   ];
 
   const [isMyProfileOpen, setIsMyProfileOpen] = useState(false);
