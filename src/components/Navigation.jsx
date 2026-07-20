@@ -108,8 +108,12 @@ const Navigation = () => {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (refMenu.current && !refMenu.current.contains(e.target)) {
-        setMenuOpen(false);
+      if (MenuOpen && refMenu.current) {
+        const clickedOnHamburger = refMenu.current.contains(e.target);
+        const mobileMenuDropdown = e.target.closest('.mobile-menu-dropdown');
+        if (!clickedOnHamburger && !mobileMenuDropdown) {
+          setMenuOpen(false);
+        }
       }
       
       if (refProfile.current && !refProfile.current.contains(e.target)) {
@@ -138,7 +142,7 @@ const Navigation = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [cartOpen, showMobileSearch]);
+  }, [cartOpen, showMobileSearch, MenuOpen]);
 
   useEffect(() => {
     if (darkMode) {
@@ -164,14 +168,14 @@ const Navigation = () => {
     <nav className='sticky top-0 w-full bg-gradient-to-tl from-teal-500 via-teal-700 to-orange-500 shadow-lg z-50'>
       <div className='bg-teal-900 h-1'></div>
 
-      {/* MAIN ROW — three clean flex groups, no absolute positioning fights */}
-      <div className='max-w-7xl mx-auto h-20 flex items-center justify-between gap-2 px-3 md:px-6 relative z-[9999]'>
+      {/* MAIN ROW — height ab har screen size pe barhti hai taake logo chota na dikhe */}
+      <div className='max-w-7xl mx-auto h-16 sm:h-20 md:h-24 flex items-center justify-between gap-2 px-3 md:px-6 relative z-[9999]'>
 
         {/* LEFT: hamburger (mobile) + logo */}
         <div className='flex items-center gap-2 md:gap-4 shrink-0' ref={refMenu}>
           <button
             onClick={toggleMobileMenu}
-            className="md:hidden text-white p-1 -ml-1"
+            className="md:hidden text-white p-1 -ml-1 shrink-0"
             aria-label="Toggle menu"
           >
             {MenuOpen ? (
@@ -185,10 +189,10 @@ const Navigation = () => {
             )}
           </button>
 
-          <Link to='/' className="shrink-0">
+          <Link to='/' className="shrink-0 flex items-center py-1">
             <img
               src={saa2}
-              className='h-12 sm:h-14 md:h-16 w-auto'
+              className='h-12 sm:h-16 md:h-20 w-auto object-contain max-w-[150px] sm:max-w-[180px] md:max-w-none'
               alt="Logo"
             />
           </Link>
@@ -422,7 +426,7 @@ const Navigation = () => {
 
       {/* Mobile Menu Dropdown */}
       {MenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg z-[99999] p-4 max-h-[80vh] overflow-y-auto">
+        <div className="mobile-menu-dropdown md:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg z-[99999] p-4 max-h-[80vh] overflow-y-auto">
           <NavLink
             to="/"
             className="block py-2 px-4 text-gray-800 dark:text-gray-200 hover:bg-teal-100 dark:hover:bg-gray-700 rounded"
