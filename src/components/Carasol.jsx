@@ -23,8 +23,9 @@ const Carasol = ({ category }) => {
     ];
   } else {
     slides = [
-       w,
        r,
+       w,
+      
 
       "https://www.mariab.pk/cdn/shop/files/Luxury_Pret_Web_Banner_02.jpg?v=1763444782",
     ];
