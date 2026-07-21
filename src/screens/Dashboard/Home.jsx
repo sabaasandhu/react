@@ -30,7 +30,7 @@ const Home = () => {
         
     <div className='mt-2'>
           <Carasol/>
-      <h1 className='text-center italic font-extrabold text-2xl h-50  text-wrap bg-gradient-to-tl from-teal-500 via-teal-700 to-orange-500  shadow-lg sticky mt-10  text-black'> NEW ARRIVALS</h1>
+      <h1 className='text-center italic font-extrabold text-2xl h-50  text-wrap shadow-lg sticky mt-10  text-black'> NEW ARRIVALS</h1>
       <MetaData title={'Main page'} />
       {
         loading ? <Loader /> : (
