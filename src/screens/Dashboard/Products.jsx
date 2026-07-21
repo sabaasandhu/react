@@ -27,7 +27,7 @@ const isAdmin = user && user.is_staff === true
 
 
   return (
-     <div className='max-w-8xl mx-auto px-5 sm:px-9 mb-3'>
+     <div className='max-w-8xl mx-auto px-5 sm:px-9 mb-3 mt-10'>
 
            
       

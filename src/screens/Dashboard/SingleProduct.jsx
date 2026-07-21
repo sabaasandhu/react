@@ -279,9 +279,9 @@ const SingleProduct = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Left: Product Images - Enhanced */}
           <div className="flex flex-col-reverse sm:flex-row gap-4">
-            {/* Thumbnails - Vertical */}
+            {/* Thumbnails - Vertical (desktop only) */}
             {images && images.length > 1 && (
-              <div className="flex sm:flex-col gap-3 w-full sm:w-24 flex-shrink-0 overflow-x-auto sm:overflow-x-visible">
+              <div className="hidden sm:flex sm:flex-col gap-3 w-full sm:w-24 flex-shrink-0 overflow-x-auto sm:overflow-x-visible">
                 {images.map((img, i) => (
                   <button
                     key={i}
@@ -396,7 +396,7 @@ const SingleProduct = () => {
                 )}
               </div>
 
-              {/* Thumbnails - Horizontal (mobile) */}
+              {/* Thumbnails - Horizontal (mobile only) */}
               {images && images.length > 1 && (
                 <div className="flex sm:hidden gap-3 overflow-x-auto pb-2 px-1">
                   {images.map((img, i) => (
