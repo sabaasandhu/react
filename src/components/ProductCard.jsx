@@ -58,7 +58,7 @@ const ProductCard = ({ product, index }) => {
   return (
     
     <motion.div
-      className=" dark:bg-gray-800 text-black dark:text-white text-gray-700 dark:text-gray-300
+      className=" dark:bg-gray-800 text-black dark:text-white text-gray-700 mt-10 dark:text-gray-300
 
  border border-teal-500 bg-white mt-20 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-50"
       initial={{ opacity: 0, y: 20 }}
