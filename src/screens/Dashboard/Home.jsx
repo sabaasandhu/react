@@ -30,11 +30,11 @@ const Home = () => {
         
     <div className='mt-2'>
           <Carasol/>
-      <h1 className='text-center font-extrabold text-2xl h-50  text-wrap shadow-lg sticky mt-12 border-3 border-white  text-black'> NEW ARRIVALS</h1>
+      <h1 className='text-center font-extrabold text-2xl h-50 text-wrap shadow-lg sticky mt-12 border-3 border-white dark:border-gray-700 text-black dark:text-white bg-white dark:bg-gray-900'> NEW ARRIVALS</h1>
       <MetaData title={'Main page'} />
       {
         loading ? <Loader /> : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
             {
               products.length > 0 ? products.map((product, index) =>
                 <ProductCard key={index} product={product} />
