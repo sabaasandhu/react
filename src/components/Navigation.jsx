@@ -488,7 +488,7 @@ const Navigation = () => {
                     <div key={item.id || productId} className="flex flex-col border-b pb-3">
                       <div className="flex">
                         <img
-                          src={productImage ? `https://django-production-126c.up.railway.app${productImage}` : '/default-product.jpg'}
+                          src={productImage ? `https://web-production-10987.up.railway.app${productImage}` : '/default-product.jpg'}
                           alt={productName}
                           className="h-16 w-16 object-cover rounded shrink-0"
                         />
