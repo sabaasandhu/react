@@ -1,9 +1,8 @@
-import React from 'react'
-import { useEffect } from 'react';
-import { fetchProducts } from "../../redux/actions/productActions";
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { fetchProducts } from "../../redux/actions/productActions";
 import Loader from '../../components/Loader';
-import ProductCard from '../../components/ProductCard';
 import MetaData from '../../components/MetaData';
 import Carasol from '../../components/Carasol'
 
@@ -47,12 +46,30 @@ const Home = () => {
           {productList.length > 0 ? (
             <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5'>
               {productList.map((product, index) => (
-                <div
+                <Link
+                  to={`/products/${product?.id ?? index}`}
                   key={product?.id ?? index}
-                  className='bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden'
+                  className='group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden block'
                 >
-                  <ProductCard product={product} />
-                </div>
+                  <div className='relative overflow-hidden aspect-square bg-gray-100 dark:bg-gray-700'>
+                    <img
+                      src={product?.image || product?.images?.[0] || '/placeholder.png'}
+                      alt={product?.name || 'Product'}
+                      className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
+                    />
+                  </div>
+
+                  <div className='p-3'>
+                    <h3 className='text-sm font-semibold text-gray-800 dark:text-gray-100 truncate'>
+                      {product?.name}
+                    </h3>
+                    <div className='flex items-center gap-2 mt-1'>
+                      <span className='text-indigo-600 dark:text-indigo-400 font-bold text-base'>
+                        Rs. {product?.price}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           ) : (
