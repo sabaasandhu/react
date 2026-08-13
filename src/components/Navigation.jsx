@@ -19,6 +19,7 @@ import { fetchCart } from "../redux/actions/cartActions";
 import { cartApis } from "../config/apis"; 
 import salePriceFunc from '../helpers/Func'
 import loo from '../image/loo.png'
+import goo from '../image/goo.png'
 
 const Navigation = () => {
   const categories = [
@@ -193,7 +194,7 @@ const Navigation = () => {
           <Link to='/' className="shrink-0 flex items-center py-1">
             <img
               src={loo}
-              className='h-12 sm:h-16 md:h-20 w-auto object-contain max-w-[150px] sm:max-w-[180px] md:max-w-none'
+              className='h-16 sm:h-16 md:h-20 w-auto object-contain max-w-[200px] sm:max-w-[200px] md:max-w-none'
               alt="Logo"
             />
           </Link>
