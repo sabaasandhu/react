@@ -165,8 +165,8 @@ const Navigation = () => {
   };
 
   return (
-    <nav className='sticky top-0 w-full bg-gradient-to-tl from-teal-500 via-teal-700 to-orange-500 shadow-lg z-50'>
-      <div className='bg-teal-900 h-1'></div>
+<nav className="sticky top-0 w-full bg-gradient-to-r from-[#190019] via-[#2B124C] to-[#522B5B] shadow-lg z-50">
+  <div className="bg-[#854F6C] h-1"></div>
 
       {/* MAIN ROW — height ab har screen size pe barhti hai taake logo chota na dikhe */}
       <div className='max-w-7xl mx-auto h-16 sm:h-20 md:h-24 flex items-center justify-between gap-2 px-3 md:px-6 relative z-[9999]'>
