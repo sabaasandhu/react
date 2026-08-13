@@ -193,7 +193,7 @@ const Navigation = () => {
 
           <Link to='/' className="shrink-0 flex items-center py-1">
             <img
-              src={loo}
+              src={goo}
               className='h-20 sm:h-20 md:h-20 w-auto object-contain max-w-[250px] sm:max-w-[250px] md:max-w-none'
               alt="Logo"
             />
