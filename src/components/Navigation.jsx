@@ -17,7 +17,8 @@ import { profile_link_login, profile_link_not_login, Navlink } from "../componen
 import toast from 'react-hot-toast';
 import { fetchCart } from "../redux/actions/cartActions";
 import { cartApis } from "../config/apis"; 
-import salePriceFunc from '../helpers/Func';
+import salePriceFunc from '../helpers/Func'
+import loo from '../image/loo.png'
 
 const Navigation = () => {
   const categories = [
@@ -191,7 +192,7 @@ const Navigation = () => {
 
           <Link to='/' className="shrink-0 flex items-center py-1">
             <img
-              src={saa2}
+              src={loo}
               className='h-12 sm:h-16 md:h-20 w-auto object-contain max-w-[150px] sm:max-w-[180px] md:max-w-none'
               alt="Logo"
             />
