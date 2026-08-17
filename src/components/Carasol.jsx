@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
-import w from "../image/w.jpg";
 import caraaa from "../image/caraaa.png";
 import v from "../image/v.jpg";
 
