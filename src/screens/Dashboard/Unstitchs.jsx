@@ -5,7 +5,7 @@ import MetaData from '../../components/MetaData'
 import { Link } from 'react-router-dom'
 import ProductCard from '../../components/ProductCard'
 import { fetchUnstitchs } from '../../redux/actions/productActions'
-import uno from '../../image/uno.png'
+import yy from '../../image/yy.png'
 
 const Unstitchs = () => {
   const dispatch = useDispatch()
@@ -25,7 +25,7 @@ const Unstitchs = () => {
       
         <div className="w-full h-full">
                <img
-                 src={uno}
+                 src={yy}
                  alt=""
                  
                />
