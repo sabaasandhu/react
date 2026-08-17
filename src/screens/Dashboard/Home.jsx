@@ -12,6 +12,7 @@ import b3 from "../../image/b3.webp";
 import uns from "../../image/uns.jpeg";
 import t from '../../image/t.jpg'
 import e1 from '../../image/e1.jpg'
+import j2 from '../../image/j2.jpg'
 
 const Home = () => {
   const dispatch = useDispatch()
