@@ -5,6 +5,7 @@ import MetaData from '../../components/MetaData'
 import { Link } from 'react-router-dom'
 import ProductCard from '../../components/ProductCard'
 import { fetchUnstitchs } from '../../redux/actions/productActions'
+import UN from '../../image/UN.png'
 
 const Unstitchs = () => {
   const dispatch = useDispatch()
@@ -22,9 +23,13 @@ const Unstitchs = () => {
     <div className='max-w-8xl mx-auto px-5 sm:px-9 mb-3'>
       <MetaData title="Unstitchs" />
       
-      <h1 className='text-4xl md:text-5xl mt-10 text-orange-600 font-bold italic text-center mb-10 underline underline-offset-4 decoration-6'>
-        Unstitch Dresses
-      </h1>
+        <div className="">
+               <img
+                 src={UN}
+                 alt=""
+                 
+               />
+             </div>
       
       {loading ? (
         <Loader />
