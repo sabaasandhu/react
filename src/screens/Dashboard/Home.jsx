@@ -176,7 +176,7 @@ const Home = () => {
   {/* SALE BANNER */}
 
   <section className="max-w-7xl mx-auto px-6 mb-16">
-    <div className="bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-700 rounded-3xl overflow-hidden grid md:grid-cols-2 items-center">
+    <div className="bg-gradient-to-r from-purple-300  to-[#522B5B] text-white rounded-3xl overflow-hidden grid md:grid-cols-2 items-center">
 
       <div className="p-10 md:p-16 text-white">
         <p className="uppercase tracking-[6px]">
