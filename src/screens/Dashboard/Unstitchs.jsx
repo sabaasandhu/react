@@ -23,7 +23,7 @@ const Unstitchs = () => {
     <div className='max-w-8xl mx-auto px-5 sm:px-9 mb-3'>
       <MetaData title="Unstitchs" />
       
-        <div className="">
+        <div className="w-full h-full">
                <img
                  src={uno}
                  alt=""
