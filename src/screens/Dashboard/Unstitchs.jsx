@@ -5,7 +5,7 @@ import MetaData from '../../components/MetaData'
 import { Link } from 'react-router-dom'
 import ProductCard from '../../components/ProductCard'
 import { fetchUnstitchs } from '../../redux/actions/productActions'
-import uu from '../../image/uu.png'
+import uno from '../../image/uno.png'
 
 const Unstitchs = () => {
   const dispatch = useDispatch()
@@ -23,9 +23,9 @@ const Unstitchs = () => {
     <div className='max-w-8xl mx-auto px-5 sm:px-9 mb-3'>
       <MetaData title="Unstitchs" />
       
-        <div className="hidden md:flex justify-center">
+        <div className="">
                <img
-                 src={uu}
+                 src={uno}
                  alt=""
                  
                />
