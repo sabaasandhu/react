@@ -4,7 +4,7 @@ import { FaInstagram, FaFacebookF, FaTiktok } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <MDBFooter className='text-center text-white mt-8 bg-gradient-to-tl from-teal-500 via-teal-700 to-orange-500 shadow-lg ' style={{ backgroundColor: '#0a4275' }}>
+    <MDBFooter className='text-center text-white mt-8 bg-gradient-to-r from-[#190019] via-[#2B124C] to-[#522B5B] shadow-lg ' style={{ backgroundColor: '#0a4275' }}>
       
       {/* Register section */}
       <MDBContainer className='p-4 pb-0'>

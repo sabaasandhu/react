@@ -80,49 +80,6 @@ const Home = () => {
     </div>
   </section>
 
-  {/* FEATURES */}
-
-  <section className="py-16 bg-gray-100 dark:bg-gray-900">
-    <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 px-6">
-
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center">
-        <div className="text-5xl mb-4">🚚</div>
-        <h2 className="font-bold text-2xl mb-2">
-          Free Shipping
-        </h2>
-
-        <p className="text-gray-500">
-          Fast delivery all over Pakistan.
-        </p>
-      </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center">
-        <div className="text-5xl mb-4">💳</div>
-
-        <h2 className="font-bold text-2xl mb-2">
-          Secure Payment
-        </h2>
-
-        <p className="text-gray-500">
-          Safe and trusted checkout.
-        </p>
-      </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center">
-        <div className="text-5xl mb-4">⭐</div>
-
-        <h2 className="font-bold text-2xl mb-2">
-          Premium Quality
-        </h2>
-
-        <p className="text-gray-500">
-          High quality fabrics & stitching.
-        </p>
-      </div>
-
-    </div>
-  </section>
-
   {/* SHOP BY CATEGORY */}
 
   <section className="py-20">
@@ -144,7 +101,7 @@ const Home = () => {
         className="group relative overflow-hidden rounded-3xl shadow-xl"
       >
         <img
-          src="j2.jpg"
+          src={j2}
           className="h-80 w-full object-cover group-hover:scale-110 duration-500"
           alt=""
         />

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
 import w from "../image/w.jpg";
-import r from "../image/r.png";
+import caraaa from "../image/caraaa.png";
 import v from "../image/v.jpg";
 
 const Carasol = ({ category }) => {
@@ -25,8 +25,7 @@ const Carasol = ({ category }) => {
   } else {
     slides = [
       v,
-      r,
-      w,
+      caraaa,
 
       //"https://www.mariab.pk/cdn/shop/files/Luxury_Pret_Web_Banner_02.jpg?v=1763444782",
     ];
