@@ -204,7 +204,7 @@ const Navigation = () => {
         <nav className='hidden md:flex items-center gap-6 lg:gap-8 flex-1 justify-center'>
           <NavLink
             to="/"
-            className="text-base lg:text-lg font-semibold font-mono italic transition duration-500 hover:text-teal-200 whitespace-nowrap"
+            className="text-white lg:text-lg font-semibold font-mono italic transition duration-500 hover:text-teal-200 whitespace-nowrap"
           >
             Home
           </NavLink>
@@ -230,7 +230,7 @@ const Navigation = () => {
             <NavLink
               key={item.url}
               to={item.url}
-              className="text-base lg:text-lg font-semibold font-mono italic transition duration-500 hover:text-teal-200 whitespace-nowrap"
+              className="text-white lg:text-lg font-semibold font-mono italic transition duration-500 hover:text-teal-200 whitespace-nowrap"
             >
               {item.name}
             </NavLink>
@@ -388,7 +388,7 @@ const Navigation = () => {
                     <Link
                       key={i}
                       to={link.url}
-                      className="block py-2 px-4 font-serif hover:bg-teal-300 text-orange-500 text-center font-bold hover:text-white transition"
+                      className="block py-2 px-4 font-serif hover:bg-teal-300 text-purple-950 text-center font-bold hover:text-white transition"
                       onClick={() => setIsMyProfileOpen(false)}
                     >
                       {link.name}
