@@ -192,16 +192,22 @@ const Navigation = () => {
           </button>
 
           <Link to='/' className="shrink-0 flex items-center py-1">
+            {/*
+              FIX: `h-18` is not a valid Tailwind class (default scale has no 18),
+              so it was silently ignored and the logo had NO height constraint on
+              mobile (< sm), letting it render at natural size and blow out the
+              header. Using h-16 here to match the mobile row height (h-16).
+            */}
             <img
               src={sign}
-              className='h-18 sm:h-20 md:h-20 w-auto object-contain max-w-[250px] sm:max-w-[250px] md:max-w-none'
+              className='h-16 sm:h-20 md:h-20 w-auto object-contain max-w-[180px] sm:max-w-[250px] md:max-w-none'
               alt="Logo"
             />
           </Link>
         </div>
 
         {/* CENTER: desktop nav links only */}
-        <nav className='hidden md:flex items-center gap-6 lg:gap-8 flex-1 justify-center'>
+        <div className='hidden md:flex items-center gap-6 lg:gap-8 flex-1 justify-center'>
           <NavLink
             to="/"
             className="text-white lg:text-lg font-semibold font-mono italic transition duration-500 hover:text-teal-200 whitespace-nowrap"
@@ -235,7 +241,7 @@ const Navigation = () => {
               {item.name}
             </NavLink>
           ))}
-        </nav>
+        </div>
 
         {/* RIGHT: search + icons + profile */}
         <div className="flex items-center justify-end gap-1 sm:gap-2 md:gap-3 shrink-0">
