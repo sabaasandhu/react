@@ -3,7 +3,7 @@ import { Typewriter } from 'react-simple-typewriter';
 
 const Header = () => {
   return (
-    <div className='bg-black text-center  h-6 text-orange-500 '>
+    <div className='bg-purple-950 text-center  h-6 text-white '>
       <h1 className="text-lg md:text-xl lg:text-1xl">
         <Typewriter
           words={[
