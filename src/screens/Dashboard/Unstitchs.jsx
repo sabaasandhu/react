@@ -5,7 +5,7 @@ import MetaData from '../../components/MetaData'
 import { Link } from 'react-router-dom'
 import ProductCard from '../../components/ProductCard'
 import { fetchUnstitchs } from '../../redux/actions/productActions'
-import unnt from '../../image/unnt.jpg'
+import unnt from '../../image/unnt.png'
 
 const Unstitchs = () => {
   const dispatch = useDispatch()
