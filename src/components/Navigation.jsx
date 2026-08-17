@@ -18,8 +18,8 @@ import toast from 'react-hot-toast';
 import { fetchCart } from "../redux/actions/cartActions";
 import { cartApis } from "../config/apis"; 
 import salePriceFunc from '../helpers/Func'
-import loo from '../image/loo.png'
-import goo from '../image/goo.png'
+import sign from '../image/sign.png'
+import bag from '../image/bag.png'
 
 const Navigation = () => {
   const categories = [
@@ -193,7 +193,7 @@ const Navigation = () => {
 
           <Link to='/' className="shrink-0 flex items-center py-1">
             <img
-              src={goo}
+              src={bag}
               className='h-20 sm:h-20 md:h-20 w-auto object-contain max-w-[250px] sm:max-w-[250px] md:max-w-none'
               alt="Logo"
             />
