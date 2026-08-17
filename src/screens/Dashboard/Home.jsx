@@ -29,7 +29,7 @@ const Home = () => {
   <Carasol />
 
   {/* HERO SECTION */}
-  <section className="bg-gradient-to-r from-purple-200  to-rose-500 text-white">
+  <section className="bg-gradient-to-r from-purple-200  to-purple-900 text-white">
     <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center px-6 py-20">
 
       <div>
