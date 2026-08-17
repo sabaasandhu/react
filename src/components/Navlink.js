@@ -5,8 +5,8 @@
 export const Navlink=[
 
         {url: "/",name: "Home"},
-        // {url: "/unstitchs",name: "Unstitchs"},
         {url: "/sales",name: "Sales"},
+        {url: "/unstitchs",name: "Unstitchs"},
         {url: "/contactus",name: "Contact"},
         
         // {url: "/login",name: "login"},

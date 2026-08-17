@@ -8,6 +8,10 @@ import MetaData from '../../components/MetaData';
 import Carasol from '../../components/Carasol'
 import { Link } from "react-router-dom";
 import v from "../../image/v.jpg";
+import b3 from "../../image/b3.webp";
+import uns from "../../image/uns.jpeg";
+import t from '../../image/t.jpg'
+import e1 from '../../image/e1.jpg'
 
 const Home = () => {
   const dispatch = useDispatch()
@@ -29,7 +33,7 @@ const Home = () => {
   <Carasol />
 
   {/* HERO SECTION */}
-  <section className="bg-gradient-to-r from-purple-200  to-purple-900 text-white">
+  <section className="bg-gradient-to-r from-purple-300  to-[#522B5B] text-white">
     <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center px-6 py-20">
 
       <div>
@@ -50,24 +54,24 @@ const Home = () => {
 
         <div className="flex gap-4 mt-8">
           <Link
-            to="/product/two-piece"
+            to="/"
             className="bg-white text-purple-700 font-bold px-8 py-3 rounded-full hover:bg-gray-200 transition"
           >
             Shop Now
           </Link>
 
           <Link
-            to="/product/three-piece"
+            to="/sales"
             className="border-2 border-white px-8 py-3 rounded-full hover:bg-white hover:text-purple-700 transition"
           >
-            Explore
+            Sales
           </Link>
         </div>
       </div>
 
       <div className="hidden md:flex justify-center">
         <img
-          src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800"
+          src={b3}
           alt=""
           className="rounded-3xl shadow-2xl h-[520px] object-cover"
         />
@@ -136,11 +140,11 @@ const Home = () => {
     <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 px-6">
 
       <Link
-        to="/product/two-piece"
+        to="/product/to-piece"
         className="group relative overflow-hidden rounded-3xl shadow-xl"
       >
         <img
-          src="https://images.unsplash.com/photo-1496747611176-843222e1e57f?w=800"
+          src="j2.jpg"
           className="h-80 w-full object-cover group-hover:scale-110 duration-500"
           alt=""
         />
@@ -167,7 +171,7 @@ const Home = () => {
         className="group relative overflow-hidden rounded-3xl shadow-xl"
       >
         <img
-          src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800"
+          src={t}
           className="h-80 w-full object-cover group-hover:scale-110 duration-500"
           alt=""
         />
@@ -186,11 +190,11 @@ const Home = () => {
       </Link>
 
       <Link
-        to="/product/cotton"
+        to="/unstitchs"
         className="group relative overflow-hidden rounded-3xl shadow-xl"
       >
         <img
-          src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800"
+          src={uns}
           className="h-80 w-full object-cover group-hover:scale-110 duration-500"
           alt=""
         />
@@ -198,7 +202,7 @@ const Home = () => {
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
           <div className="text-center">
             <h3 className="text-white text-3xl font-bold">
-              Cotton
+              Unstitch
             </h3>
 
             <p className="text-white mt-2">
@@ -234,7 +238,7 @@ const Home = () => {
         </p>
 
         <Link
-          to="/product/two-piece"
+          to="/sales"
           className="inline-block mt-8 bg-white text-pink-700 px-8 py-3 rounded-full font-bold hover:scale-105 duration-300"
         >
           Shop Collection
@@ -243,7 +247,7 @@ const Home = () => {
 
       <div className="hidden md:block">
         <img
-          src={v}
+          src={e1}
           alt=""
           className="w-full h-[500px] object-cover"
         />
