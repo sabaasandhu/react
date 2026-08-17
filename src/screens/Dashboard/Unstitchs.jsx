@@ -25,7 +25,7 @@ const Unstitchs = () => {
       <MetaData title="Unstitchs" />
       
       
-        <div className="w-full h-full">
+        <div className="w-full h-full mt-10">
                <img
                  src={unnt}
                  alt=""
