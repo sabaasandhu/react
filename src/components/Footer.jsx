@@ -1,128 +1,81 @@
 import React from 'react';
-import { MDBFooter, MDBContainer } from 'mdb-react-ui-kit';
 import { FaInstagram, FaFacebookF, FaTiktok } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <MDBFooter className='text-center text-white mt-8 bg-gradient-to-r from-[#190019] via-[#2B124C] to-[#522B5B] shadow-lg ' style={{ backgroundColor: '#0a4275' }}>
-      
-      {/* Register section */}
-      <MDBContainer className='p-4 pb-0'>
-        <section>
-          <p className='d-flex justify-content-center align-items-center'>
-            <span className='me-3'>Register for free</span>
-            <button style={{
-              borderRadius: '20px',
-              border: '1px solid white',
-              background: 'transparent',
-              color: 'white',
-              padding: '8px 20px'
-              
-            }}>
-              <a href="/signup" style={{ color: 'inherit', textDecoration: 'none' }}>Sign Up</a>
-            </button>
-          </p>
-        </section>
-      </MDBContainer>
-       <section className="py-16 bg-gray-100 dark:bg-gray-900">
-    <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 px-6">
+    <footer className="bg-gradient-to-r from-[#190019] via-[#2B124C] to-[#522B5B] text-white">
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center">
-        <div className="text-5xl mb-4">🚚</div>
-        <h2 className="font-bold text-2xl mb-2">
-          Free Shipping
-        </h2>
-
-        <p className="text-gray-500">
-          Fast delivery all over Pakistan.
-        </p>
-      </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center">
-        <div className="text-5xl mb-4">💳</div>
-
-        <h2 className="font-bold text-2xl mb-2">
-          Secure Payment
-        </h2>
-
-        <p className="text-gray-500">
-          Safe and trusted checkout.
-        </p>
-      </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center">
-        <div className="text-5xl mb-4">⭐</div>
-
-        <h2 className="font-bold text-2xl mb-2">
-          Premium Quality
-        </h2>
-
-        <p className="text-gray-500">
-          High quality fabrics & stitching.
-        </p>
-      </div>
-
-    </div>
-  </section>
-
-      {/* Social Icons */}
-      <MDBContainer className='pb-4'>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '14px' }}>
-          
-          <a href="https://www.instagram.com/" target="_blank" style={{
-            color: 'white',
-            fontSize: '28px',
-            backgroundColor: '#E4405F',
-            borderRadius: '50%',
-            width: '45px',
-            height: '45px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            textDecoration: 'none'
-          }}>
-            <FaInstagram />
-          </a>
-
-          <a href="https://www.facebook.com/" target="_blank" style={{
-            color: 'white',
-            fontSize: '28px',
-            backgroundColor: '#1877F2',
-            borderRadius: '50%',
-            width: '45px',
-            height: '45px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            textDecoration: 'none'
-          }}>
-            <FaFacebookF />
-          </a>
-
-          <a href="https://www.tiktok.com/" target="_blank" style={{
-            color: 'white',
-            fontSize: '28px',
-            backgroundColor: '#000000',
-            borderRadius: '50%',
-            width: '45px',
-            height: '45px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            textDecoration: 'none'
-          }}>
-            <FaTiktok />
-          </a>
-
+      {/* Trust badges */}
+      <div className="max-w-7xl mx-auto grid sm:grid-cols-3 gap-6 px-6 pt-14 pb-10 border-b border-white/10">
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="text-4xl">🚚</div>
+          <h3 className="font-semibold text-lg">Free Shipping</h3>
+          <p className="text-white/60 text-sm">Fast delivery all over Pakistan.</p>
         </div>
-      </MDBContainer>
+
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="text-4xl">💳</div>
+          <h3 className="font-semibold text-lg">Secure Payment</h3>
+          <p className="text-white/60 text-sm">Safe and trusted checkout.</p>
+        </div>
+
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="text-4xl">⭐</div>
+          <h3 className="font-semibold text-lg">Premium Quality</h3>
+          <p className="text-white/60 text-sm">High quality fabrics &amp; stitching.</p>
+        </div>
+      </div>
+
+      {/* Newsletter / signup */}
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 px-6 py-8">
+        <span className="text-white/80">Register for free and get updates on new arrivals</span>
+        <a
+          href="/signup"
+          className="inline-block rounded-full border border-white px-6 py-2 text-sm font-medium text-white hover:bg-white hover:text-[#2B124C] transition-colors"
+        >
+          Sign Up
+        </a>
+      </div>
+
+      {/* Social icons */}
+      <div className="flex justify-center gap-4 pb-8">
+        <a
+          href="https://www.instagram.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Instagram"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-[#E4405F] text-white text-xl hover:opacity-80 transition-opacity"
+        >
+          <FaInstagram />
+        </a>
+
+        <a
+          href="https://www.facebook.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Facebook"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1877F2] text-white text-xl hover:opacity-80 transition-opacity"
+        >
+          <FaFacebookF />
+        </a>
+
+        <a
+          href="https://www.tiktok.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="TikTok"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white text-xl hover:opacity-80 transition-opacity"
+        >
+          <FaTiktok />
+        </a>
+      </div>
 
       {/* Copyright */}
-      <div className='text-center p-3' style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
-        © {new Date().getFullYear()} YourWebsite — Coming Soon 🚀
+      <div className="text-center text-sm text-white/70 py-4 bg-black/20">
+        © {new Date().getFullYear()} YourWebsite 
       </div>
 
-    </MDBFooter>
+    </footer>
   );
 };
 
