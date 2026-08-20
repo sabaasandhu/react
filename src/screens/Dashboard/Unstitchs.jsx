@@ -64,7 +64,7 @@ const Unstitchs = () => {
                 {isAdmin && (
                   <Link 
                     className="inline-flex items-center gap-2 text-white bg-orange-600 hover:bg-orange-700 px-5 py-2 rounded-lg text-sm transition duration-200"
-                    to="http://localhost:8000/admin/"
+                    to="https://web-production-10987.up.railway.app/admin"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
