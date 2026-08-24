@@ -318,14 +318,14 @@ const Navigation = () => {
   {user?.profile_image ? (
     <img
       src={user.profile_image}
-      className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full border-2 border-white shadow-lg object-cover"
+      className="w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10   shadow-lg object-cover"
       alt="Profile"
     />
   ) : (
-    <TbUserHeart className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 text-purple p-1 border-2 border-purple shadow-lg" />
+    <TbUserHeart className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 text-purple p-1  shadow-lg" />
   )}
   {user && (
-    <div className="absolute bottom-0 right-0 w-3 h-3 bg-purple-950 border-2 border-white"></div>
+    <div className="absolute bottom-0 right-0 w-3 h-3 bg-purple-950 "></div>
   )}
 </div>
 
