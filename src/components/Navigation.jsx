@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link, NavLink,useLocation,useNavigate } from 'react-router-dom'
-import profile from '../image/profile.jpg'
+// import profile from '../image/profile.jpg'
 import { clearCart } from "../redux/slices/cartSlice";
 import { FaHeart } from "react-icons/fa";
 import { logout } from "../redux/slices/authSlice";
@@ -20,6 +20,7 @@ import { cartApis } from "../config/apis";
 import salePriceFunc from '../helpers/Func'
 import sign from '../image/sign.png'
 import bag from '../image/bag.png'
+import { TbUserHeart } from "react-icons/tb";
 
 const Navigation = () => {
   const categories = [
@@ -313,16 +314,20 @@ const Navigation = () => {
               }}
               className="flex items-center focus:outline-none gap-2"
             >
-              <div className="relative shrink-0">
-                <img
-                  src={user?.profile_image || profile}
-                  className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full border-2 border-white shadow-lg object-cover"
-                  alt="Profile"
-                />
-                {user && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                )}
-              </div>
+            <div className="relative shrink-0">
+  {user?.profile_image ? (
+    <img
+      src={user.profile_image}
+      className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full border-2 border-white shadow-lg object-cover"
+      alt="Profile"
+    />
+  ) : (
+    <TbUserHeart className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 text-white bg-white/10 rounded-full p-1 border-2 border-white shadow-lg" />
+  )}
+  {user && (
+    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+  )}
+</div>
 
               {/* Welcome text + username — hidden on very small screens to save space */}
               {user && (
@@ -341,18 +346,21 @@ const Navigation = () => {
             {isMyProfileOpen && (
               <div className="absolute right-0 mt-3 w-64 max-w-[90vw] bg-white rounded-xl shadow-xl py-3 top-full">
                 {user && (
-                  <div className="px-4 pb-3 border-b border-gray-200 mb-2">
-                    <div className="flex items-center mb-2">
-                      <img
-                        src={user?.profile_image || profile}
-                        className="w-12 h-12 rounded-full border-2 border-teal-500 object-cover mr-3"
-                        alt="Profile"
-                      />
-                      <div>
-                        <p className="font-bold text-teal-700 text-lg">{user.username}</p>
-                        <p className="text-sm text-gray-500 truncate max-w-[180px]">{user.email}</p>
-                      </div>
-                    </div>
+                <div className="flex items-center mb-2">
+  {user?.profile_image ? (
+    <img
+      src={user.profile_image}
+      className="w-12 h-12 rounded-full border-2 border-teal-500 object-cover mr-3"
+      alt="Profile"
+    />
+  ) : (
+    <TbUserHeart className="w-12 h-12 text-teal-600 bg-teal-50 rounded-full p-2 mr-3 border-2 border-teal-500" />
+  )}
+  <div>
+    <p className="font-bold text-teal-700 text-lg">{user.username}</p>
+    <p className="text-sm text-gray-500 truncate max-w-[180px]">{user.email}</p>
+  </div>
+
                   </div>
                 )}
 
