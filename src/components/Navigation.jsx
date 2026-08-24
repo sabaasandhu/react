@@ -318,7 +318,7 @@ const Navigation = () => {
   {user?.profile_image ? (
     <img
       src={user.profile_image}
-      className="w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10   shadow-lg object-cover"
+      className="w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10  border-2 border-white shadow-lg object-cover"
       alt="Profile"
     />
   ) : (
@@ -370,7 +370,7 @@ const Navigation = () => {
                       <Link
                         key={i}
                         to={link.url}
-                        className="flex items-center py-2 px-4 text-gray-700 hover:bg-gray-100 hover:text-teal-700 transition"
+                        className="flex items-center py-2 px-4 text-white hover:bg-purple-950 hover:text-white transition"
                         onClick={() => setIsMyProfileOpen(false)}
                       >
                         <span className="mr-2">{link.icon}</span>
@@ -402,7 +402,7 @@ const Navigation = () => {
                     <Link
                       key={i}
                       to={link.url}
-                      className="block py-2 px-4 font-serif hover:bg-teal-300 text-purple-950 text-center font-bold hover:text-white transition"
+                      className="block py-2 px-4 font-serif hover:bg-purple-950 text-white text-center font-bold hover:text-white transition"
                       onClick={() => setIsMyProfileOpen(false)}
                     >
                       {link.name}
