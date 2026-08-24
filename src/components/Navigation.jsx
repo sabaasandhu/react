@@ -322,10 +322,10 @@ const Navigation = () => {
       alt="Profile"
     />
   ) : (
-    <TbUserHeart className="w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 text-white bg-white/10 rounded-full p-1 border-2 border-white shadow-lg" />
+    <TbUserHeart className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 text-purple p-1 border-2 border-purple shadow-lg" />
   )}
   {user && (
-    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+    <div className="absolute bottom-0 right-0 w-3 h-3 bg-purple-950 border-2 border-white"></div>
   )}
 </div>
 
