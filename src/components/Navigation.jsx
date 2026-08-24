@@ -322,7 +322,7 @@ const Navigation = () => {
       alt="Profile"
     />
   ) : (
-    <TbUserHeart className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 text-purple p-1  shadow-lg" />
+    <TbUserHeart className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 text-purple-300 p-1  shadow-lg" />
   )}
   {user && (
     <div className="absolute bottom-0 right-0 w-3 h-3 bg-purple-950 "></div>
@@ -344,7 +344,7 @@ const Navigation = () => {
 
             {/* Profile Dropdown */}
             {isMyProfileOpen && (
-              <div className="absolute right-0 mt-3 w-64 max-w-[90vw] bg-white rounded-xl shadow-xl py-3 top-full">
+              <div className="absolute right-0 mt-3 w-64 max-w-[90vw] bg-purple-300 rounded-xl shadow-xl py-3 top-full">
                 {user && (
                 <div className="flex items-center mb-2">
   {user?.profile_image ? (
@@ -354,7 +354,7 @@ const Navigation = () => {
       alt="Profile"
     />
   ) : (
-    <TbUserHeart className="w-12 h-12 text-teal-600 bg-teal-50 rounded-full p-2 mr-3 border-2 border-teal-500" />
+    <TbUserHeart className="w-12 h-12 text-purple-300 bg-purple-950 rounded-full p-2 mr-3 border-2 border-white" />
   )}
   <div>
     <p className="font-bold text-teal-700 text-lg">{user.username}</p>
@@ -370,7 +370,7 @@ const Navigation = () => {
                       <Link
                         key={i}
                         to={link.url}
-                        className="flex items-center py-2 px-4 text-white hover:bg-purple-950 hover:text-white transition"
+                        className="flex items-center py-2 px-4 text-white hover:bg-purple-950 hover:text-purple-300 transition"
                         onClick={() => setIsMyProfileOpen(false)}
                       >
                         <span className="mr-2">{link.icon}</span>
@@ -402,7 +402,7 @@ const Navigation = () => {
                     <Link
                       key={i}
                       to={link.url}
-                      className="block py-2 px-4 font-serif hover:bg-purple-950 text-white text-center font-bold hover:text-white transition"
+                      className="block py-2 px-4 font-serif hover:bg-purple-950 text-white text-center font-bold hover:text-purple-300 transition"
                       onClick={() => setIsMyProfileOpen(false)}
                     >
                       {link.name}
@@ -419,7 +419,7 @@ const Navigation = () => {
       {showMobileSearch && (
         <div
           ref={refMobileSearch}
-          className="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg z-[99999] p-3 border-t border-gray-200"
+          className="lg:hidden absolute top-full left-0 w-full bg-purple-200 dark:bg-gray-800 shadow-lg z-[99999] p-3 border-t border-gray-200"
         >
           <form onSubmit={handleMobileSearch} className="flex items-center gap-2">
             <input
