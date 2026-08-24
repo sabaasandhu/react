@@ -6,6 +6,7 @@ import { fetchCategory } from '../../redux/actions/productActions'
 import Loader from '../../components/Loader'
 import MetaData from '../../components/MetaData'
 import { Link, useParams } from 'react-router-dom'
+import unnts from '../../image/unnts.png'
 
 import ProductCard from '../../components/ProductCard'
 
@@ -28,16 +29,21 @@ const isAdmin = user && user.is_staff === true
 
   return (
      <div className='max-w-8xl mx-auto px-5 sm:px-9 mb-3 mt-10'>
+            <MetaData  title={category} />
 
-           
-      
-      <MetaData  title={category} />
+            <div className="w-full h-full mt-5">
+                           <img
+                             src={unnts}
+                             alt=""
+                             
+                           />
+                         </div>
       {
         loading ? <Loader /> : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
-                  <h1 className='text-5xl mt-20 text-orange-600 font-bold italic col-span-full text-center mb-4 underline underline-offset-4 decoration-6'>
+                  {/* <h1 className='text-5xl mt-20 text-orange-600 font-bold italic col-span-full text-center mb-4 underline underline-offset-4 decoration-6'>
                      {category}
-                  </h1>
+                  </h1> */}
            {
   productsByCategory.length > 0 ? productsByCategory.map((product, index) =>
     <ProductCard key={index} product={product} />
