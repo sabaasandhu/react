@@ -17,8 +17,8 @@ import toast from "react-hot-toast";
 import salePriceFunc from "../../helpers/Func";
 
 // ✅ CORRECT URL with /api/ prefix - matches your Django backend
-const ORDER_API_URL = "https://django-production-bd9e.up.railway.app/api/orders/create/";
-const IMAGE_BASE_URL = "https://django-production-bd9e.up.railway.app";
+const ORDER_API_URL = "https://django-production-02ca.up.railway.app/api/orders/create/";
+const IMAGE_BASE_URL = "https://django-production-02ca.up.railway.app";
 
 const Checkout = () => {
   const dispatch = useDispatch();

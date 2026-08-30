@@ -7,7 +7,7 @@ import { FaTrash, FaMinus, FaPlus, FaShoppingBag, FaRuler, FaPalette } from "rea
 import salePriceFunc from "../helpers/Func";
 
 // Image base URL - same as used in other components
-const IMAGE_BASE_URL = "https://web-production-10987.up.railway.app";
+const IMAGE_BASE_URL = "https://django-production-02ca.up.railway.app";
 
 const Cart = () => {
   const dispatch = useDispatch();
