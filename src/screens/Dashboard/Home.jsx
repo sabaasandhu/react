@@ -258,7 +258,7 @@ const Home = () => {
 
         {isAdmin && (
           <a
-            href="https://web-production-10987.up.railway.app/admin/"
+            href="https://django-production-bd9e.up.railway.app/admin/"
             target="_blank"
             rel="noreferrer"
             className="inline-block mt-6 bg-red-600 text-white px-6 py-3 rounded-lg"

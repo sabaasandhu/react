@@ -27,7 +27,7 @@ const Navigation = () => {
     { name : 'two piece', url: '/product/to-piece' },
     { name : 'three piece', url: '/product/three-piece'  },
     { name : 'Cotton', url: '/product/cotton'  },
-    // { name : 'Crepe', url: '/product/crepe' },
+    { name : 'Dhanak', url: '/product/dhanak' },
     
   ];
 
@@ -504,7 +504,7 @@ const Navigation = () => {
                     <div key={item.id || productId} className="flex flex-col border-b pb-3">
                       <div className="flex">
                         <img
-                          src={productImage ? `https://web-production-10987.up.railway.app${productImage}` : '/default-product.jpg'}
+                          src={productImage ? `https://https://django-production-bd9e.up.railway.app${productImage}` : '/default-product.jpg'}
                           alt={productName}
                           className="h-16 w-16 object-cover rounded shrink-0"
                         />

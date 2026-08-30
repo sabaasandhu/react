@@ -33,7 +33,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
-const IMAGE_BASE_URL = "https://web-production-10987.up.railway.app";
+const IMAGE_BASE_URL = "https://django-production-bd9e.up.railway.app";
 
 const SIZE_CHART = {
   Small: { bust: "34", waist: "28", hips: "36", length: "42" },
