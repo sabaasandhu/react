@@ -1,19 +1,19 @@
 const apis =[
    
-    "https://django-production-02ca.up.railway.app/api/products",
-    "https://django-production-02ca.up.railway.app/api/product",
+    "https://django-production-02ca.up.railway.app/api/products/",
+    "https://django-production-02ca.up.railway.app/api/product/",
     "https://django-production-02ca.up.railway.app/",
-    "https://django-production-02ca.up.railway.app/api/sliders",
-    "https://django-production-02ca.up.railway.app/api/category",
-    "https://django-production-02ca.up.railway.app/api/unstitchs",
-    "https://django-production-02ca.up.railway.app/api/unstitch"            
+    "https://django-production-02ca.up.railway.app/api/sliders/",
+    "https://django-production-02ca.up.railway.app/api/category/",
+    "https://django-production-02ca.up.railway.app/api/unstitchs/",
+    "https://django-production-02ca.up.railway.app/api/unstitch/"            
     
     
 ]
 
 export const authApis = {
     register: "https://django-production-02ca.up.railway.app/auth/register/",
-    token: "https://django-production-02ca.up.railway.app/api/token/",    // ← /api/ add kiya
+    token: "https://django-production-02ca.up.railway.app/api/token/",    
     login: "https://django-production-02ca.up.railway.app/api/auth/login/",
     forgotPassword: "https://django-production-02ca.up.railway.app/api/forgot-password/",  // ye apke urls.py ke mutabik
     tokenRefresh: "https://django-production-02ca.up.railway.app/api/token/refresh/", 
