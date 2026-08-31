@@ -4,7 +4,7 @@ import { setLoading, setCart, setError, clearCart } from "../slices/cartSlice";
 import { cartApis } from "../../config/apis";
 import toast from 'react-hot-toast'; 
 
-const BASE_URL = "https://django-production-02ca.up.railway.app";
+const BASE_URL = "https://web-production-d7f28a.up.railway.app";
 
 // ✅ Simple refresh token function
 const refreshToken = async () => {
@@ -203,7 +203,7 @@ export const empptyCart = () => async (dispatch, getState) => {
 
     // ❌ DELETE کی بجائے POST use karein
     await axios.post( // ✅ POST use karein
-      "https://django-production-02ca.up.railway.app/api/cart/clear/",
+      "https://web-production-d7f28a.up.railway.app/api/cart/clear/",
       {},
       {
         headers: {

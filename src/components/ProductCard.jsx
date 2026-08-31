@@ -82,8 +82,8 @@ const ProductCard = ({ product, index }) => {
   src={
     product.images && product.images.length > 0
       ? isHover && product.images.length > 1
-        ? `https://django-production-02ca.up.railway.app${product.images[1].image}`
-        : `https://django-production-02ca.up.railway.app${product.images[0].image}`
+        ? `https://web-production-d7f28a.up.railway.app${product.images[1].image}`
+        : `https://web-production-d7f28a.up.railway.app${product.images[0].image}`
       : '/placeholder.jpg'
   }
   alt={name}

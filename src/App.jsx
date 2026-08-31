@@ -92,7 +92,7 @@ const App = () => {
             <Route path='/checkout' element={<Checkout/>}/>
             <Route path='/order-confirmation' element={<OrderConfirmation/>}/>
 
-              <Route path='https://django-production-02ca.up.railway.app/admin/' />
+              <Route path='https://web-production-d7f28a.up.railway.app/admin/' />
            
            </Routes>
     </Router>
