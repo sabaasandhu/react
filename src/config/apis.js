@@ -1,19 +1,19 @@
 const apis =[
    
+    "https://web-production-d7f28a.up.railway.app/api/products/",
+    "https://web-production-d7f28a.up.railway.app/api/product",
     "https://web-production-d7f28a.up.railway.app/",
-    "https://web-production-d7f28a.up.railway.app/api/product/",
-    "https://web-production-d7f28a.up.railway.app/",
-    "https://web-production-d7f28a.up.railway.app/api/sliders/",
-    "https://web-production-d7f28a.up.railway.app/api/category/",
-    "https://web-production-d7f28a.up.railway.app/api/unstitchs/",
-    "https://web-production-d7f28a.up.railway.app/api/unstitch/"            
+    "https://web-production-d7f28a.up.railway.app",
+    "https://web-production-d7f28a.up.railway.app/api/category",
+    "https://web-production-d7f28a.up.railway.app/api/unstitchs",
+    "https://web-production-d7f28a.up.railway.app/api/unstitch"            
     
     
 ]
 
 export const authApis = {
     register: "https://web-production-d7f28a.up.railway.app/auth/register/",
-    token: "https://web-production-d7f28a.up.railway.app/api/token/",    
+    token: "https://web-production-d7f28a.up.railway.app/api/token/",    // ← /api/ add kiya
     login: "https://web-production-d7f28a.up.railway.app/api/auth/login/",
     forgotPassword: "https://web-production-d7f28a.up.railway.app/api/forgot-password/",  // ye apke urls.py ke mutabik
     tokenRefresh: "https://web-production-d7f28a.up.railway.app/api/token/refresh/", 
