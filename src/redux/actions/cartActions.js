@@ -4,7 +4,7 @@ import { setLoading, setCart, setError, clearCart } from "../slices/cartSlice";
 import { cartApis } from "../../config/apis";
 import toast from 'react-hot-toast'; 
 
-const BASE_URL = "https://web-production-10987.up.railway.app";
+const BASE_URL = "https://django-production-02ca.up.railway.app";
 
 // ✅ Simple refresh token function
 const refreshToken = async () => {

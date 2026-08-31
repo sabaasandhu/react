@@ -1,18 +1,16 @@
 
+import React from 'react'
 import './App.css'
 import { Toaster } from "react-hot-toast";
 import{BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import  { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { checkAuth } from './redux/actions/authAction';
-
-import React from 'react'
 import Home from './screens/Dashboard/Home'
 import Login from './screens/Authentication/Login'
 import Signup from './screens/Authentication/Signup'
 import Contacts from './screens/Dashboard/Contacts'
 import SingleProduct from './screens/Dashboard/SingleProduct'
-
 // components
 //import TopHeader from './components/TopHeader'
 import Header from './components/Header'
@@ -27,7 +25,6 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { fetchCart } from './redux/actions/cartActions';
 import Checkout from './screens/Dashboard/Checkout';
 import OrderConfirmation from './screens/Dashboard/OrderConfirmation';
-
 import Footer from './components/Footer' 
 import SingleUnstitch from './screens/Dashboard/SingleUnstitch';
 
@@ -74,8 +71,7 @@ const App = () => {
       <Navigation/>
       
         <Routes>
-
-          <Route path='/' element={<Home/>}/>
+           <Route path='/' element={<Home/>}/>
           <Route path='/product/:category' element={<Products/>} />
            {/* <Route path='/products/category' element={<Products/>}/> */}
           <Route path='/products/:id' element={<SingleProduct/>}/>
@@ -97,13 +93,12 @@ const App = () => {
             <Route path='/order-confirmation' element={<OrderConfirmation/>}/>
 
               <Route path='https://django-production-02ca.up.railway.app/admin/' />
-
-              </Routes>
+           
+           </Routes>
     </Router>
     <Footer/>
     </div>
     
   )
 }
-
 export default App

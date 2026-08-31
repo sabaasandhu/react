@@ -5,7 +5,7 @@ import { fetchCart } from "./cartActions";
 import { clearCart } from "../slices/cartSlice";
 import { authApis } from "../../config/apis";
 
-const BASE_URL = "https://web-production-10987.up.railway.app";
+const BASE_URL = "https://django-production-02ca.up.railway.app";
 
 // ✅ Auto-check token validity on app start
 export const checkAuth = () => async (dispatch) => {
