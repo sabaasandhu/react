@@ -1,4 +1,4 @@
-```jsx
+
 import React, { useState } from "react";
 import { HiShoppingBag } from "react-icons/hi2";
 import Rating from "./Rating";
@@ -139,4 +139,3 @@ const UnstitchCard = ({ product, index }) => {
 };
 
 export default UnstitchCard;
-```

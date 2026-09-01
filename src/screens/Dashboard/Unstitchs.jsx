@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Loader from '../../components/Loader'
 import MetaData from '../../components/MetaData'
 import { Link } from 'react-router-dom'
-import ProductCard from '../../components/ProductCard'
+import UnstitchCard from '../../components/UnstitchCard'
 import { fetchUnstitchs } from '../../redux/actions/productActions'
 import unnt from '../../image/unnt.png'
 
@@ -39,8 +39,8 @@ const Unstitchs = () => {
           {hasUnstitchs ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
               {unstitchs.map((product, index) => (
-                <ProductCard key={index} product={product} />
-              ))}
+  <UnstitchCard key={index} product={product} index={index} />
+))}
             </div>
           ) : (
             <div className="col-span-full">

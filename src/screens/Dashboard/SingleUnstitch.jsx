@@ -117,7 +117,7 @@ const handleAddToCart = async () => {
         >
           <img
             ref={imgRef}
-           src={`${apis[2]}${images?.[selectedImage]?.image || ""}`}  
+           src={`${apis[3]}${images?.[selectedImage]?.image || ""}`}  
             alt={`${name} thumbnail`}
             className="w-full h-full object-contain cursor-zoom-in"
           />
@@ -128,7 +128,7 @@ const handleAddToCart = async () => {
               style={{
                 left: `${cursorPosition.x - 99}px`,
                 top: `${cursorPosition.y - 99}px`,
-                backgroundImage: `url('${apis[2]}${images?.[selectedImage]?.image || ""}')`,
+                backgroundImage: `url('${apis[3]}${images?.[selectedImage]?.image || ""}')`,
                 backgroundPosition: `${magnifierPosition.x}% ${magnifierPosition.y}%`,
                 backgroundSize: `${imgRef.current?.offsetWidth * 2}px ${imgRef.current?.offsetHeight * 2}px`,
                 backgroundRepeat: "no-repeat",
@@ -151,7 +151,7 @@ const handleAddToCart = async () => {
               }`}
             >
               <img
-                src={`${apis[2]}${img.image}`}
+                src={`${apis[3]}${img.image}`}
                 alt={`${name} thumbnail`}
                 className="w-full h-full object-contain"
               />
