@@ -26,8 +26,9 @@ const Navigation = () => {
   const categories = [
     { name : 'two piece', url: '/product/to-piece' },
     { name : 'three piece', url: '/product/three-piece'  },
-    { name : 'Cotton', url: '/product/cotton'  },
+    { name : 'Linen', url: '/product/linen'  },
     { name : 'Dhanak', url: '/product/dhanak' },
+    { name : 'Silk', url: '/product/silk' },
     
   ];
 
