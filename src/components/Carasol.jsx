@@ -1,5 +1,5 @@
 import React from 'react'
-import mainnn from '../image/mainnn.png' 
+import mainnn from '../image/mainnn.jpeg' 
 
 
 const Carasol = () => { return ( 
