@@ -33,30 +33,6 @@ const Home = () => {
 
   <Carasol />
 
-  {/* HERO SECTION */}
-  <section className="bg-gradient-to-r from-purple-300  to-[#522B5B] text-white">
-    <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center px-6 py-20">
-
-      <div>
-       <p className="mt-2 text-lg text-white/90 leading-8 text-justify text-ellipsis text-center">
-          Premium quality dresses designed for every occasion.
-          buy on discount.
-        </p>
-
-        <div className="flex gap-4 mt-8">
-          <Link
-            to="/sales"
-            className="bg-white text-purple-700 font-bold px-8 py-3 rounded-full hover:bg-gray-200 transition"
-          >
-            Shop Now
-          </Link>
-        </div>
-      </div>
-
-
-    </div>
-  </section>
-
   {/* SHOP BY CATEGORY */}
 
   <section className="py-10">
