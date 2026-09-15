@@ -38,52 +38,28 @@ const Home = () => {
     <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center px-6 py-20">
 
       <div>
-        <span className="bg-white/20 px-4 py-2 rounded-full uppercase text-sm tracking-widest">
-          New Collection 2026
-        </span>
-
-        <h1 className="text-5xl md:text-6xl font-extrabold mt-6 leading-tight">
-          Discover Your
-          <br />
-          Perfect Outfit
-        </h1>
-
-        <p className="mt-6 text-lg text-white/90 leading-8">
+       <p className="mt-2 text-lg text-white/90 leading-8 text-justify text-ellipsis text-center">
           Premium quality dresses designed for every occasion.
-          Shop Two Piece, Three Piece & Cotton Collections.
+          buy on discount.
         </p>
 
         <div className="flex gap-4 mt-8">
           <Link
-            to="/"
+            to="/sales"
             className="bg-white text-purple-700 font-bold px-8 py-3 rounded-full hover:bg-gray-200 transition"
           >
             Shop Now
           </Link>
-
-          <Link
-            to="/sales"
-            className="border-2 border-white px-8 py-3 rounded-full hover:bg-white hover:text-purple-700 transition"
-          >
-            Sales
-          </Link>
         </div>
       </div>
 
-      <div className="hidden md:flex justify-center">
-        <img
-          src={b3}
-          alt=""
-          className="rounded-3xl shadow-2xl h-[520px] object-cover"
-        />
-      </div>
 
     </div>
   </section>
 
   {/* SHOP BY CATEGORY */}
 
-  <section className="py-20">
+  <section className="py-10">
 
     <div className="text-center mb-14">
       <h2 className="text-4xl font-bold">
