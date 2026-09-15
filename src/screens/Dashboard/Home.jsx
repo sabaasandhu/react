@@ -141,7 +141,7 @@ const Home = () => {
     </div>
 
     {loading ? (
-      <div className="flex justify-center py-20">
+      <div className="flex justify-center py-16">
         <Loader />
       </div>
     ) : productList.length > 0 ? (
