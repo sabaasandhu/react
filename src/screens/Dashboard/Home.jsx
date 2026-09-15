@@ -125,58 +125,18 @@ const Home = () => {
     </div>
   </section>
 
-  {/* SALE BANNER */}
-
-  <section className="max-w-7xl mx-auto px-6 mb-16">
-    <div className="bg-gradient-to-r from-purple-300  to-[#522B5B] text-white rounded-3xl overflow-hidden grid md:grid-cols-2 items-center">
-
-      <div className="p-10 md:p-16 text-white">
-        <p className="uppercase tracking-[6px]">
-          Summer Collection
-        </p>
-
-        <h2 className="text-5xl font-extrabold mt-5">
-          Up To
-          <span className="block text-yellow-300">
-            50% OFF
-          </span>
-        </h2>
-
-        <p className="mt-6 text-lg">
-          Discover beautiful dresses specially selected
-          for every occasion.
-        </p>
-
-        <Link
-          to="/sales"
-          className="inline-block mt-8 bg-white text-pink-700 px-8 py-3 rounded-full font-bold hover:scale-105 duration-300"
-        >
-          Shop Collection
-        </Link>
-      </div>
-
-      <div className="hidden md:block">
-        <img
-          src={e1}
-          alt=""
-          className="w-full h-[500px] object-cover"
-        />
-      </div>
-
-    </div>
-  </section>
-
   {/* PRODUCTS */}
 
   <section className="max-w-7xl mx-auto px-6 pb-20">
 
-    <div className="text-center mb-12">
+    <div className="text-center mb-8">
       <h2 className="text-4xl font-bold">
         New Arrivals
       </h2>
 
       <p className="text-gray-500 mt-3">
         Latest fashion collection
+        Ready to wear
       </p>
     </div>
 
