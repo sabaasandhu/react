@@ -1,10 +1,10 @@
 import React from 'react'
-import mainn from '../image/mainn.png' 
+import mainnn from '../image/mainnn.png' 
 
 
 const Carasol = () => { return ( 
-<div className="w-full h-16 "> 
-  <img src={mainn} alt="" /> 
+<div className="w-full h-18 "> 
+  <img src={mainnn} alt="" /> 
   </div> ) }
  export default Carasol
 
