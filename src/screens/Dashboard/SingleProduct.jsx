@@ -34,7 +34,17 @@ import {
 } from "react-icons/fa";
 
 
-const getImageUrl = (img) => (img ? img.image : "/placeholder.jpg");
+const getImageUrl = (img) => {
+  if (!img || !img.image) return "/placeholder.jpg";
+  
+  // Agar URL https:// se shuru nahi hota, toh add karo
+  if (img.image.startsWith("http")) {
+    return img.image;
+  }
+  
+  // Agar relative hai toh Railway base URL add karo
+  return `https://web-production-d7f28a.up.railway.app${img.image}`;
+};
 
 const SIZE_CHART = {
   Small: { bust: "34", waist: "28", hips: "36", length: "42" },
