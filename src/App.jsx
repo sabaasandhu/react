@@ -2,7 +2,7 @@
 import React from 'react'
 import './App.css'
 import { Toaster } from "react-hot-toast";
-import{BrowserRouter as Router, Routes, Route} from 'react-router-dom'
+import{BrowserRouter as Router, Routes, Route,useLocation} from 'react-router-dom'
 import  { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { checkAuth } from './redux/actions/authAction';
@@ -27,12 +27,19 @@ import Checkout from './screens/Dashboard/Checkout';
 import OrderConfirmation from './screens/Dashboard/OrderConfirmation';
 import Footer from './components/Footer' 
 import SingleUnstitch from './screens/Dashboard/SingleUnstitch';
-
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
 
 const App = () => {
 
 
     const dispatch = useDispatch();
+    
 
     useEffect(() => {
     // ✅ App start پر ہمیشہ cart fetch کریں
@@ -65,7 +72,7 @@ const App = () => {
      <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
       <Toaster position="top-right" />
     <Router>
-
+      <ScrollToTop />
       {/* <TopHeader/> */}
       <Header/>
       <Navigation/>

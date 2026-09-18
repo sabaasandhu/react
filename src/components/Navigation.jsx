@@ -212,13 +212,13 @@ const Navigation = () => {
         <div className='hidden md:flex items-center gap-6 lg:gap-8 flex-1 justify-center'>
           <NavLink
             to="/"
-            className="text-white lg:text-lg font-semibold font-mono italic transition duration-500 hover:text-teal-200 whitespace-nowrap"
+           className="text-white lg:text-base font-medium transition duration-300 hover:text-amber-200 whitespace-nowrap tracking-wide"
           >
             Home
           </NavLink>
 
           <div className='group relative font-mono text-purple-950 text-base lg:text-lg'>
-            <button className='text-white hover:text-teal-200 transition duration-500 flex items-center text-base lg:text-lg font-semibold font-mono italic whitespace-nowrap'>
+            <button className='text-white hover:text-amber-200 transition duration-300 flex items-center text-base font-medium whitespace-nowrap tracking-wide'>
               Category
             </button>
             <div className='absolute hidden group-hover:block bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 min-w-[150px] z-[99999] border border-gray-200 dark:border-gray-700 top-full left-0'>
@@ -238,7 +238,7 @@ const Navigation = () => {
             <NavLink
               key={item.url}
               to={item.url}
-              className="text-white lg:text-lg font-semibold font-mono italic transition duration-500 hover:text-teal-200 whitespace-nowrap"
+             className="text-white lg:text-base font-medium transition duration-300 hover:text-amber-200 whitespace-nowrap tracking-wide"
             >
               {item.name}
             </NavLink>
@@ -255,7 +255,8 @@ const Navigation = () => {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="bg-transparent focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 w-full text-sm"
+               className="bg-transparent focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-400 w-full text-sm font-medium"
+
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
@@ -333,10 +334,12 @@ const Navigation = () => {
               {/* Welcome text + username — hidden on very small screens to save space */}
               {user && (
                 <div className="hidden sm:flex flex-col leading-tight text-left">
-                  <span className="text-xs text-white/80">
+                 <span className="text-[10px] text-white/70 uppercase tracking-wider">
+
                     Welcome to Sabanosh
                   </span>
-                  <span className="text-white font-semibold text-sm md:text-base max-w-[100px] md:max-w-[150px] truncate">
+                  <span className="text-white font-medium text-sm max-w-[100px] md:max-w-[150px] truncate">
+
                     {user.username}
                   </span>
                 </div>
@@ -371,7 +374,8 @@ const Navigation = () => {
                       <Link
                         key={i}
                         to={link.url}
-                        className="flex items-center py-2 px-4 text-white hover:bg-purple-950 hover:text-purple-300 transition"
+                        className="flex items-center py-2 px-4 text-white text-sm font-medium hover:bg-purple-950 hover:text-amber-300 transition-colors"
+
                         onClick={() => setIsMyProfileOpen(false)}
                       >
                         <span className="mr-2">{link.icon}</span>
@@ -390,7 +394,7 @@ const Navigation = () => {
                         toast.success("Logged out successfully 👋");
                         navigate("/login");
                       }}
-                      className="block w-full text-left py-2 px-4 mt-2 text-red-600 hover:bg-red-50 font-semibold flex items-center"
+                      className="block w-full text-left py-2 px-4 mt-2 text-red-600 text-sm font-medium hover:bg-red-50 flex items-center transition-colors"
                     >
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -403,7 +407,8 @@ const Navigation = () => {
                     <Link
                       key={i}
                       to={link.url}
-                      className="block py-2 px-4 font-serif hover:bg-purple-950 text-white text-center font-bold hover:text-purple-300 transition"
+                      className="block py-2 px-4 text-white text-center text-sm font-medium hover:bg-purple-950 hover:text-amber-300 transition-colors"
+
                       onClick={() => setIsMyProfileOpen(false)}
                     >
                       {link.name}
@@ -446,7 +451,7 @@ const Navigation = () => {
         <div className="mobile-menu-dropdown md:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg z-[99999] p-4 max-h-[80vh] overflow-y-auto">
           <NavLink
             to="/"
-            className="block py-2 px-4 text-gray-800 dark:text-gray-200 hover:bg-teal-100 dark:hover:bg-gray-700 rounded"
+           className="block py-2 px-4 text-gray-700 dark:text-gray-200 text-sm font-medium hover:bg-amber-50 dark:hover:bg-gray-700 rounded transition-colors"
             onClick={() => setMenuOpen(false)}
           >
             Home
@@ -458,7 +463,7 @@ const Navigation = () => {
               <NavLink
                 key={index}
                 to={category.url}
-                className="block py-1 px-4 text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400"
+className="block text-gray-700 dark:text-gray-200 hover:text-amber-600 dark:hover:text-amber-400 text-sm font-medium transition duration-200 px-3 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 whitespace-nowrap"
                 onClick={() => setMenuOpen(false)}
               >
                 {category.name}
