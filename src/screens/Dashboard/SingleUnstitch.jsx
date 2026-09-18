@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import Rating from "../../components/Rating";
 import salePriceFunc from "../../helpers/Func.jsx";
-import apis from "../../config/apis";
 import { singleUnstitch } from "../../redux/actions/productActions";
 import { addToCart } from "../../redux/actions/cartActions"; // ✅ import Add to Cart action
 import MetaData from "../../components/MetaData";
@@ -117,7 +116,7 @@ const handleAddToCart = async () => {
         >
           <img
             ref={imgRef}
-           src={`${apis[3]}${images?.[selectedImage]?.image || ""}`}  
+          src={images?.[selectedImage]?.image || "/placeholder.jpg"} 
             alt={`${name} thumbnail`}
             className="w-full h-full object-contain cursor-zoom-in"
           />
@@ -128,7 +127,7 @@ const handleAddToCart = async () => {
               style={{
                 left: `${cursorPosition.x - 99}px`,
                 top: `${cursorPosition.y - 99}px`,
-                backgroundImage: `url('${apis[3]}${images?.[selectedImage]?.image || ""}')`,
+                backgroundImage: `url('${images?.[selectedImage]?.image || ""}')`,
                 backgroundPosition: `${magnifierPosition.x}% ${magnifierPosition.y}%`,
                 backgroundSize: `${imgRef.current?.offsetWidth * 2}px ${imgRef.current?.offsetHeight * 2}px`,
                 backgroundRepeat: "no-repeat",
@@ -151,7 +150,7 @@ const handleAddToCart = async () => {
               }`}
             >
               <img
-                src={`${apis[3]}${img.image}`}
+                src={img.image}
                 alt={`${name} thumbnail`}
                 className="w-full h-full object-contain"
               />
