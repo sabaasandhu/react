@@ -33,17 +33,9 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
-
 const getImageUrl = (img) => {
   if (!img || !img.image) return "/placeholder.jpg";
-  
-  // Agar URL https:// se shuru nahi hota, toh add karo
-  if (img.image.startsWith("http")) {
-    return img.image;
-  }
-  
-  // Agar relative hai toh Railway base URL add karo
-  return `https://web-production-d7f28a.up.railway.app${img.image}`;
+  return img.image;
 };
 
 const SIZE_CHART = {
@@ -242,8 +234,6 @@ const SingleProduct = () => {
   const sizes = Object.keys(sizeChart);
   const GenderIcon = gender === "women" ? FaFemale : gender === "men" ? FaMale : null;
   const readyToAdd = stock > 0 && Boolean(selectedSize);
-
-  const getImageUrl = (img) => (img ? `${IMAGE_BASE_URL}${img.image}` : "/placeholder.jpg");
 
   // Render stars function
   const renderStars = (rating) => {
