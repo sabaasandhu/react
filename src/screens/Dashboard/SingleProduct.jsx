@@ -444,7 +444,7 @@ const SingleProduct = () => {
                   </span>
                 )}
               </div>
-              <h1 className="text-3xl font-bold text-amber-900 mt-2 leading-tight">{name}</h1>
+              <h1 className="text-3xl font-bold text-amber-900 dark:text-white mt-2 leading-tight">{name}</h1>
               <div className="flex flex-wrap items-center gap-2 mt-3">
                 <span className="text-amber-700 text-sm bg-amber-50 px-4 py-2 rounded-2xl font-medium border border-amber-200 capitalize flex items-center gap-2">
                   <FaTshirt className="w-3.5 h-3.5" />
@@ -495,7 +495,7 @@ const SingleProduct = () => {
                 </span>
                 Product Description
               </h3>
-              <p className="text-amber-800/80 leading-relaxed">
+              <p className="text-amber-800/80 dark:text-gray-300 leading-relaxed">
                 {description || "No description available."}
               </p>
             </div>

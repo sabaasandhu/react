@@ -144,7 +144,6 @@ const Checkout = () => {
         subtotal: 0, 
         discountSavings: 0,
         shipping: 0, 
-        tax: 0, 
         total: 0 
       };
     }
@@ -163,19 +162,17 @@ const Checkout = () => {
     });
     
     const shipping = subtotal > 5000 ? 0 : 200;
-    const tax = subtotal * 0.05;
-    const total = subtotal + shipping + tax;
+    const total = subtotal + shipping;
     
     return { 
       subtotal: parseFloat(subtotal.toFixed(2)), 
       discountSavings: parseFloat(discountSavings.toFixed(2)),
       shipping: parseFloat(shipping.toFixed(2)), 
-      tax: parseFloat(tax.toFixed(2)), 
       total: parseFloat(total.toFixed(2)) 
     };
   };
   
-  const { subtotal, discountSavings, shipping, tax, total } = calculateTotals();
+  const { subtotal, discountSavings, shipping, total } = calculateTotals();
 
   const handleNextStep = () => {
     if (step === 1) {
@@ -228,7 +225,6 @@ const Checkout = () => {
         }),
         items_price: subtotal,
         discount_savings: discountSavings,
-        tax_price: tax,
         shipping_price: shipping,
         total_price: total,
       };
@@ -758,10 +754,6 @@ const Checkout = () => {
                   <span className="font-bold">{shipping === 0 ? "FREE" : `Rs. ${shipping.toLocaleString()}`}</span>
                 </div>
                 
-                <div className="flex justify-between text-gray-600">
-                  <span>Tax</span>
-                  <span>Rs. {tax.toLocaleString()}</span>
-                </div>
                 
                 <div className="pt-4 border-t-2 border-teal-200">
                   <div className="flex justify-between text-xl font-bold">
