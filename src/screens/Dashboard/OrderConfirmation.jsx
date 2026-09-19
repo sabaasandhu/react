@@ -1,15 +1,12 @@
-import React, {useEffect,useState} from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import React from "react";
+import { useLocation, Link } from "react-router-dom";
 import { FaCheckCircle, FaTruck, FaHome, FaShoppingBag } from "react-icons/fa";
 
 const OrderConfirmation = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   
-  // Get order data from location state
   const { order: apiOrderData } = location.state || {};
   
-  // Transform API data to match component structure
   const orderData = apiOrderData ? {
     orderId: apiOrderData.order_number || apiOrderData.id,
     customer_email: apiOrderData.customer_email,
@@ -116,29 +113,29 @@ const OrderConfirmation = () => {
             
             {/* Next Steps */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <div className="bg-teal-50 border border-teal-100 rounded-lg p-4 text-center">
+              <Link to="/my-orders" className="bg-teal-50 border border-teal-100 rounded-lg p-4 text-center hover:shadow-lg transition block">
                 <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <FaTruck className="text-teal-600 text-xl" />
                 </div>
                 <h4 className="font-bold text-gray-800 mb-1">Track Your Order</h4>
-                <p className="text-sm text-gray-600">Real-time tracking updates</p>
-              </div>
+                <p className="text-sm text-gray-600">View your orders</p>
+              </Link>
               
-              <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-center">
+              <Link to="/" className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-center hover:shadow-lg transition block">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <FaShoppingBag className="text-blue-600 text-xl" />
                 </div>
                 <h4 className="font-bold text-gray-800 mb-1">Shop More</h4>
                 <p className="text-sm text-gray-600">Discover new products</p>
-              </div>
+              </Link>
               
-              <div className="bg-purple-50 border border-purple-100 rounded-lg p-4 text-center">
+              <Link to="/" className="bg-purple-50 border border-purple-100 rounded-lg p-4 text-center hover:shadow-lg transition block">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <FaHome className="text-purple-600 text-xl" />
                 </div>
                 <h4 className="font-bold text-gray-800 mb-1">Go Home</h4>
                 <p className="text-sm text-gray-600">Return to homepage</p>
-              </div>
+              </Link>
             </div>
             
             {/* Action Buttons */}
@@ -149,8 +146,6 @@ const OrderConfirmation = () => {
               >
                 Continue Shopping
               </Link>
-              
-            
             </div>
             
             {/* Support Info */}

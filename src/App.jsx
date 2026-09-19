@@ -27,6 +27,9 @@ import Checkout from './screens/Dashboard/Checkout';
 import OrderConfirmation from './screens/Dashboard/OrderConfirmation';
 import Footer from './components/Footer' 
 import SingleUnstitch from './screens/Dashboard/SingleUnstitch';
+import MyOrders from './screens/Dashboard/MyOrders';
+
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -98,6 +101,7 @@ const App = () => {
                      </ProtectedRoute>}           />
             <Route path='/checkout' element={<Checkout/>}/>
             <Route path='/order-confirmation' element={<OrderConfirmation/>}/>
+            <Route path='/my-orders' element={<MyOrders/>}/>
 
               <Route path='https://web-production-d7f28a.up.railway.app/admin/' />
            
