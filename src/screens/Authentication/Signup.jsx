@@ -9,9 +9,9 @@ const Signup = () => {
   const navigate = useNavigate();
   const { loading, error, user } = useSelector((state) => state.auth);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const [username, setUsername] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -30,13 +30,13 @@ const Signup = () => {
 const handleSubmit = (e) => {
   e.preventDefault();
 
-  if (!name || !email || !password) {
+  if (!username || !email || !password) {
     toast.error("Please fill all fields");
     return;
   }
 
   // pass navigate & toast
-  dispatch(registerUser(name, email, password, navigate, toast));
+  dispatch(registerUser(username, email, password, navigate, toast));
 };
 
 
@@ -45,13 +45,13 @@ const handleSubmit = (e) => {
       <h1 className="text-2xl text-black font-bold mb-4">Sign Up</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-black text-lg">
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="p-2 border rounded"
-        />
+     <input
+  type="text"
+  placeholder="Username"
+  value={username}
+  onChange={(e) => setUsername(e.target.value)}
+  className="p-2 border rounded"
+/>
         <input
           type="email"
           placeholder="Email"

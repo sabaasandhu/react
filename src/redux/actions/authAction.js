@@ -83,7 +83,7 @@ dispatch(setRefreshToken({
 };
 
 // ✅ Register user
-export const registerUser = (name, email, password) => async (dispatch) => {
+export const registerUser = (name, email, password, navigate, toast) => async (dispatch) => {
   dispatch(setLoading());
   try {
     const { data } = await axios.post(`${BASE_URL}/api/auth/register/`, {
@@ -125,31 +125,25 @@ export const registerUser = (name, email, password) => async (dispatch) => {
 export const loginUser = (email, password) => async (dispatch) => {
   dispatch(setLoading());
   try {
-    // OPTION 1: Direct JWT token request (email ko username ki tarah use karein)
-    const { data } = await axios.post("await axios.post(`${BASE_URL}/api/token/`, ...)", {
-      username: email,  // ✅ Email ko direct username ki tarah bhejein
+    const { data } = await axios.post(`${BASE_URL}/api/token/`, {
+      username: email,
       password: password
     });
     
-    // Get user info
     let userInfo;
     try {
-      // Try to get user details from your existing endpoint
       const userResponse = await axios.get(`${BASE_URL}/api/auth/user/`, {
         headers: { Authorization: `Bearer ${data.access}` }
       });
       userInfo = userResponse.data;
     } catch (err) {
-      // If no user endpoint, create basic user object
       userInfo = {
         username: email.split('@')[0],
         email: email,
         is_staff: false
-
       };
     }
     
-    // Save everything
     localStorage.setItem("user", JSON.stringify(userInfo));
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
@@ -160,43 +154,17 @@ export const loginUser = (email, password) => async (dispatch) => {
       refresh: data.refresh 
     }));
     
-    // Fetch user's cart
     dispatch(fetchCart());
     
-    return data; // Success
+    return data;
     
   } catch (error) {
     console.error("Login error:", error.response?.data);
-    
-    // اگر email سے نہیں ہوا تو username تلاش کریں
-    if (error.response?.status === 401) {
-      try {
-        // Email سے username تلاش کریں
-        const users = await User.objects.filter(email=email).first();
-        if (users) {
-          // Dobara try karein with actual username
-          const { data } = await axios.post(`${BASE_URL}/api/token/`, {
-            username: users.username,
-            password: password
-          });
-          
-          // Save data...
-          return data;
-        }
-      } catch (secondError) {
-        // Both failed
-        const msg = "Invalid email or password";
-        dispatch(setError(msg));
-        throw new Error(msg);
-      }
-    }
-    
     const msg = error.response?.data?.detail || error.message || "Login failed";
     dispatch(setError(msg));
     throw new Error(msg);
   }
 };
-
 // ✅ Logout user (only when user manually logs out)
 export const logoutUser = () => (dispatch) => {
   // Clear all data
