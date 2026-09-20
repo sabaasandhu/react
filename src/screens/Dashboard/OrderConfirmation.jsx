@@ -153,7 +153,7 @@ const OrderConfirmation = () => {
               <p className="text-gray-600 text-sm mb-2">
                 Need help? Contact our support team
               </p>
-              <p className="font-medium">📞 042-111-123-456 | ✉️ support@sabanosh.com</p>
+              <p className="font-medium">email us on sabaasandhu786@gmail.com | ✉️ support@sabanosh.com</p>
             </div>
           </div>
         </div>
