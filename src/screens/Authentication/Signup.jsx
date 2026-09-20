@@ -35,7 +35,18 @@ const handleSubmit = (e) => {
     return;
   }
 
-  // pass navigate & toast
+  // Username mein space check
+  if (username.includes(" ")) {
+    toast.error("Username mein space allowed nahi hai");
+    return;
+  }
+
+  // Username length check
+  if (username.length < 3) {
+    toast.error("Username kam az kam 3 characters ka hona chahiye");
+    return;
+  }
+
   dispatch(registerUser(username, email, password, navigate, toast));
 };
 
