@@ -7,7 +7,7 @@ const MetaData = ({title}) => {
     <div>
 
              <Helmet>
-              <title>{`women clothing store | ${title}`}</title>
+              <title>{`Sabanosh.store | ${title}`}</title>
               </Helmet> 
     </div>
   )
