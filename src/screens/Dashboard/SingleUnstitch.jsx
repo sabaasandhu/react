@@ -25,7 +25,7 @@ const SIZE_CHART = {
 const SingleUnstitch = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { product, loading } = useSelector((state) => state.prodSlice);
+  const { unstitchProduct: product, loading } = useSelector((state) => state.prodSlice);
   const navigate = useNavigate();
 
   const [quantity, setQuantity] = useState(1);

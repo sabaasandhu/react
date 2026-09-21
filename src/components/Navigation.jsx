@@ -510,7 +510,13 @@ className="block text-gray-700 dark:text-gray-200 hover:text-amber-600 dark:hove
                     <div key={item.id || productId} className="flex flex-col border-b pb-3">
                       <div className="flex">
                         <img
-                          src={productImage ? `https://web-production-d7f28a.up.railway.app${productImage}` : '/default-product.jpg'}
+                          src={
+  productImage
+    ? productImage.startsWith('http')
+      ? productImage
+      : `https://web-production-d7f28a.up.railway.app${productImage}`
+    : '/default-product.jpg'
+}
                           alt={productName}
                           className="h-16 w-16 object-cover rounded shrink-0"
                         />

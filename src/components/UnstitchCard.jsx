@@ -106,7 +106,7 @@ const UnstitchCard = ({ product, index }) => {
 
         <div className="mt-4 flex items-center justify-between gap-2">
           <Link
-            to={`/unstitch/${id}`}
+             to={`/unstitch/${product.id || product._id}`}
             className="flex-grow text-center bg-blue-600 text-white hover:bg-blue-700 rounded-md py-2 px-4 text-sm transition-colors"
           >
             View Details

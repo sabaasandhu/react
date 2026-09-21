@@ -6,7 +6,9 @@ import {
   setError,
   setsliders,
   setProductsByCategory,
-  setUnstitchs
+  setUnstitchs,
+  setUnstitchProduct,
+
 } from "../slices/productSlice";
 
 import axios from "axios";
@@ -74,8 +76,8 @@ export const fetchUnstitchs = () => async (dispatch) => {
 export const singleUnstitch = (id) => async (dispatch) => {
   try {
     dispatch(setLoading());
-    const { data } = await axios.get(`${apis[6]}/${id}`);  // [6] is new unstitch endpoint
-    dispatch(setProduct(data));
+    const { data } = await axios.get(`${apis[6]}/${id}`);  
+     dispatch(setUnstitchProduct(data)); 
   } catch (err) {
     dispatch(setError(err.message));
   }

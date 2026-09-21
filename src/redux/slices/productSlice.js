@@ -6,7 +6,8 @@ const initialState = {
     sliders: [],
     unstitchs: [],
     error: null,
-    product: '',
+    product: null,           // 👈 stitched ke liye
+    unstitchProduct: null,   // 👈 NEW — unstitch ke liye
     loading: false,
     cart: 2
 }
@@ -20,29 +21,24 @@ const ProductSlice = createSlice({
         },
         setProducts: (state, { payload }) => {
             state.loading = false
-            state.products = payload
-              if (payload && Array.isArray(payload.products)) {
-    state.products = payload.products  // ✅ Access products array
-  } else if (Array.isArray(payload)) {
-    state.products = payload  // ✅ Direct array
-  } else {
-    state.products = []  // ✅ Default empty array
-  }
-
+            if (payload && Array.isArray(payload.products)) {
+                state.products = payload.products
+            } else if (Array.isArray(payload)) {
+                state.products = payload
+            } else {
+                state.products = []
+            }
         },
         setProductsByCategory: (state, { payload }) => {
-  state.loading = false
-  
-  // ✅ SAME LOGIC AS setProducts:
-  if (payload && Array.isArray(payload.products)) {
-    state.productsByCategory = payload.products  // ✅ Access products array
-  } else if (Array.isArray(payload)) {
-    state.productsByCategory = payload  // ✅ Direct array
-  } else {
-    state.productsByCategory = []  // ✅ Default empty array
-  }
-},
-
+            state.loading = false
+            if (payload && Array.isArray(payload.products)) {
+                state.productsByCategory = payload.products
+            } else if (Array.isArray(payload)) {
+                state.productsByCategory = payload
+            } else {
+                state.productsByCategory = []
+            }
+        },
         setsliders: (state, { payload }) => {
             state.loading = false
             state.sliders = payload
@@ -51,21 +47,37 @@ const ProductSlice = createSlice({
             state.loading = false
             state.product = payload
         },
+        // 👈 NEW REDUCER
+        setUnstitchProduct: (state, { payload }) => {
+            state.loading = false
+            state.unstitchProduct = payload
+        },
+        // 👈 RESET REDUCER (optional but useful)
+        resetProducts: (state) => {
+            state.product = null
+            state.unstitchProduct = null
+        },
         setError: (state, { payload }) => {
             state.loading = false
             state.error = payload
         },
         setUnstitchs: (state, { payload }) => {
-  state.loading = false
-  
-  console.log("🛍️ Unstitchs payload:", payload); // Debugging
-  
-  // ✅ DIRECT ARRAY: Agar backend se direct array aa raha hai
-  state.unstitchs = payload || [];
-},
+            state.loading = false
+            state.unstitchs = payload || [];
+        },
     }
 })
 
-export const { setLoading, setProducts, setProduct, setError, setProductsByCategory, setsliders, setUnstitchs } = ProductSlice.actions
+export const {
+    setLoading,
+    setProducts,
+    setProduct,
+    setError,
+    setProductsByCategory,
+    setsliders,
+    setUnstitchs,
+    setUnstitchProduct,   // 👈 export karo
+    resetProducts         // 👈 export karo
+} = ProductSlice.actions
 
 export default ProductSlice.reducer
