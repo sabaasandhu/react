@@ -48,20 +48,33 @@ export const singleProduct = (id) => async (dispatch) => {
   }
 }
 
-export const fetchCategory = (category ) => async (dispatch) => {
+export const fetchCategory = (category) => async (dispatch) => {
   try {
-    dispatch(setLoading())
-   const token = localStorage.getItem("access");
+    dispatch(setLoading());
+    const token = localStorage.getItem("access");
     const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-    
-    const { data } = await axios.get(`${apis[4]}/${category}`, config)
-    dispatch(setProductsByCategory(data));
 
+    // Dono endpoints se data laayein
+    const [productsRes, unstitchsRes] = await Promise.all([
+      axios.get(apis[0], config),   // /api/products/
+      axios.get(apis[5], config),   // /api/unstitchs/
+    ]);
 
+    // Dono ko combine karein
+    const allProducts = [
+      ...(productsRes.data || []),
+      ...(unstitchsRes.data || []),
+    ];
+
+    const filtered = allProducts.filter(
+      (p) => p.category?.toLowerCase() === category.toLowerCase()
+    );
+
+    dispatch(setProductsByCategory(filtered));
   } catch (err) {
-    dispatch(setError(err.message))
+    dispatch(setError(err.message));
   }
-}
+};
 export const fetchUnstitchs = () => async (dispatch) => {
   try {
     dispatch(setLoading());
