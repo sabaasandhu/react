@@ -51,13 +51,13 @@ export const singleProduct = (id) => async (dispatch) => {
 export const fetchCategory = (category) => async (dispatch) => {
   try {
     dispatch(setLoading());
-    const token = localStorage.getItem("access");
-    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    // const token = localStorage.getItem("access");
+    // const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
     // Dono endpoints se data laayein
     const [productsRes, unstitchsRes] = await Promise.all([
-      axios.get(apis[0], config),   // /api/products/
-      axios.get(apis[5], config),   // /api/unstitchs/
+       axios.get(apis[0]),  
+       axios.get(apis[5]),
     ]);
 
     // Dono ko combine karein
