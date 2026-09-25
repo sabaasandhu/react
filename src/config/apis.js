@@ -5,7 +5,7 @@ const apis =[
     "https://web-production-d7f28a.up.railway.app/",
     "https://web-production-d7f28a.up.railway.app",
     "https://web-production-d7f28a.up.railway.app/api/category",
-    "https://web-production-d7f28a.up.railway.app/api/unstitchs",
+    "https://web-production-d7f28a.up.railway.app/api/unstitchs/",
     "https://web-production-d7f28a.up.railway.app/api/unstitch"            
     
     
