@@ -51,27 +51,43 @@ export const singleProduct = (id) => async (dispatch) => {
 export const fetchCategory = (category) => async (dispatch) => {
   try {
     dispatch(setLoading());
-    // const token = localStorage.getItem("access");
-    // const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
-    // Dono endpoints se data laayein
+    console.log("========== FETCH CATEGORY START ==========");
+    console.log("1. Category jo aayi:", category);
+    console.log("2. apis[0]:", apis[0]);
+    console.log("3. apis[5]:", apis[5]);
+
     const [productsRes, unstitchsRes] = await Promise.all([
-       axios.get(apis[0]),  
+       axios.get(apis[0]),
        axios.get(apis[5]),
     ]);
 
-    // Dono ko combine karein
+    console.log("4. Products response status:", productsRes.status);
+    console.log("5. Unstitchs response status:", unstitchsRes.status);
+    console.log("6. Products count:", productsRes.data?.length);
+    console.log("7. Unstitchs count:", unstitchsRes.data?.length);
+
     const allProducts = [
       ...(productsRes.data || []),
       ...(unstitchsRes.data || []),
     ];
 
+    console.log("8. All combined:", allProducts.length);
+    console.log("9. Saari categories:", [...new Set(allProducts.map(p => p.category))]);
+
     const filtered = allProducts.filter(
       (p) => p.category?.toLowerCase() === category.toLowerCase()
     );
 
+    console.log("10. Filtered count:", filtered.length);
+    console.log("11. Filtered products:", filtered);
+
     dispatch(setProductsByCategory(filtered));
+    console.log("========== FETCH CATEGORY END ==========");
   } catch (err) {
+    console.error("🔴🔴🔴 ERROR:", err);
+    console.error("🔴 Error message:", err.message);
+    console.error("🔴 Error response:", err.response);
     dispatch(setError(err.message));
   }
 };
