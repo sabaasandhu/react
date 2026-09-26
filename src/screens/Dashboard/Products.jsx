@@ -1,70 +1,67 @@
 import React, { useEffect } from 'react'
-import { successMesg, errorMesg } from '../../helpers/message'
-
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCategory } from '../../redux/actions/productActions'
 import Loader from '../../components/Loader'
 import MetaData from '../../components/MetaData'
 import { Link, useParams } from 'react-router-dom'
 import unnts from '../../image/unnts.png'
-
 import ProductCard from '../../components/ProductCard'
+import UnstitchCard from '../../components/UnstitchCard'
 
 const Products = () => {
+  const dispatch = useDispatch()
+  const { loading, productsByCategory } = useSelector(state => state.prodSlice)
+  const { category } = useParams()
+  const { user } = useSelector(state => state.auth)
 
+  useEffect(() => {
+    if (category) {
+      dispatch(fetchCategory(category.toLowerCase()));
+    }
+  }, [category, dispatch]);
 
-     const dispatch = useDispatch()
-     const { loading, productsByCategory } = useSelector(state => state.prodSlice)
-     const {category} = useParams()
-   
-      const { user } = useSelector(state => state.auth)
-   useEffect(() => {
-  if (category) {
-    dispatch(fetchCategory(category.toLowerCase()));
-  }
-}, [category, dispatch]);
-   
-const isAdmin = user && user.is_staff === true
+  const isAdmin = user && user.is_staff === true
 
+  // ✅ Stitched categories ki list
+  const stitchedCategories = ['to-piece', 'three-piece'];
+
+  // ✅ Har product ke liye sahi card render karein
+  const renderCard = (product, index) => {
+    const isStitched = stitchedCategories.includes(product.category?.toLowerCase());
+
+    if (isStitched) {
+      return <ProductCard key={product.id || index} product={product} index={index} />;
+    } else {
+      return <UnstitchCard key={product.id || index} product={product} index={index} />;
+    }
+  };
 
   return (
-     <div className='max-w-8xl mx-auto px-5 sm:px-9 mb-3 mt-10'>
-            <MetaData  title={category} />
+    <div className='max-w-8xl mx-auto px-5 sm:px-9 mb-3 mt-10'>
+      <MetaData title={category} />
 
-            <div className="w-full h-full mt-5">
-                           <img
-                             src={unnts}
-                             alt=""
-                             
-                           />
-                         </div>
-      {
-        loading ? <Loader /> : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
-                  {/* <h1 className='text-5xl mt-20 text-orange-600 font-bold italic col-span-full text-center mb-4 underline underline-offset-4 decoration-6'>
-                     {category}
-                  </h1> */}
-           {
-  productsByCategory.length > 0 ? productsByCategory.map((product, index) =>
-    <ProductCard key={index} product={product} />
-  ) : <div className="bg-red-300 w-64 items-center p-2 rounded-lg animate-bounce text-lg font-bold text-center text-red-700 border-1 border-red-600">
-          Coming Soon 🎁
-          {isAdmin && (
-            <Link className='text-red-900 font-bold underline' to="https://web-production-d7f28a.up.railway.app/admin/" > Add New Product </Link>
+      <div className="w-full h-full mt-5">
+        <img src={unnts} alt="" />
+      </div>
+
+      {loading ? (
+        <Loader />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
+          {productsByCategory.length > 0 ? (
+            productsByCategory.map((product, index) => renderCard(product, index))
+          ) : (
+            <div className="bg-red-300 w-64 items-center p-2 rounded-lg animate-bounce text-lg font-bold text-center text-red-700 border-1 border-red-600">
+              Coming Soon 🎁
+              {isAdmin && (
+                <Link className='text-red-900 font-bold underline' to="https://web-production-d7f28a.up.railway.app/admin/">
+                  Add New Product
+                </Link>
+              )}
+            </div>
           )}
         </div>
-}
-
-
-
-          </div>)
-
-
-      }
-
-
-
-
+      )}
     </div>
   )
 }

@@ -127,7 +127,7 @@ const ProductCard = ({ product, index }) => {
 
         <div className="mt-4 flex items-center justify-between gap-2">
           <Link
-            to={`/products/${id}`}
+             to={`/products/${product.id}`}
             className="flex-grow text-center bg-blue-600 text-white hover:bg-blue-700 rounded-md py-2 px-4 text-sm transition-colors"
           >
             View Details
